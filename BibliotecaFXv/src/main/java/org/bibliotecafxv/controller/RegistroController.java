@@ -1,13 +1,18 @@
 package org.bibliotecafxv.controller;
 
+import javafx.animation.FadeTransition;
+import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.util.Duration;
 import org.bibliotecafxv.dao.UsuarioDAO;
 import org.bibliotecafxv.model.Usuario;
 import org.bibliotecafxv.util.HashUtil;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.event.ActionEvent;
 
 
 public class RegistroController {
@@ -42,17 +47,35 @@ public class RegistroController {
     }
 
     @FXML
-    public void volverLogin() {
+    public void volverLogin(javafx.event.ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/org/bibliotecafxv/view/login.fxml")
-            );
+                );
+            Parent root = loader.load();
 
-            Stage stage = (Stage)  txtCorreo.getScene().getWindow();
-            stage.setScene(new Scene(loader.load()));
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Parent currentRoot = stage.getScene().getRoot();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            // Posicion inicial del nuevo root (fuera de la pantalla a la derecha)
+            root.setTranslateX(stage.getWidth());
+
+            // Animación del actual (se va a la izquierda)
+            TranslateTransition slideOut = new TranslateTransition(Duration.millis(300), currentRoot);
+            slideOut.setToX(-stage.getWidth());
+
+            // Animación del nuevo (entra desde la derecha)
+            TranslateTransition slideIn = new TranslateTransition(Duration.millis(300), root);
+            slideIn.setToX(0);
+
+            slideOut.setOnFinished(e -> {
+                stage.getScene().setRoot(root);
+                slideIn.play();
+                });
+            slideOut.play();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
     }
 }

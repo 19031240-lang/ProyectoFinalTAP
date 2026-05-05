@@ -1,0 +1,54 @@
+/* Fondo */
+.root {
+    -fx-background-color: linear-gradient(to bottom right, #667eea, #764ba2);
+}
+
+/* Card */
+.card {
+    -fx-background-color: white;
+    -fx-padding: 25;
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10,0,0,5);
+}
+
+/* Títulos */
+.titulo {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+
+.subtitulo {
+    -fx-font-size: 14px;
+    -fx-text-fill: gray;
+}
+
+/* Inputs */
+.input {
+    -fx-background-radius: 10;
+    -fx-padding: 8;
+}
+
+/* Botón principal */
+.btn-primary {
+    -fx-background-color: #667eea;
+    -fx-text-fill: white;
+    -fx-background-radius: 10;
+    -fx-font-weight: bold;
+}
+
+/* Botón secundario */
+.btn-secondary {
+    -fx-background-color: transparent;
+    -fx-text-fill: #667eea;
+    -fx-border-color: #667eea;
+    -fx-border-radius: 10;
+}
+
+/* Mensaje */
+.error {
+    -fx-text-fill: red;
+}
+.root {
+    -fx-background-color: linear-gradient(to bottom right, #667eea, #764ba2);
+    -fx-padding: 20;
+}

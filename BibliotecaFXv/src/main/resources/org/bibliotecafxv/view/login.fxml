@@ -1,21 +1,36 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Button?>
+<StackPane xmlns:fx="http://javafx.com/fxml"
+           fx:controller="org.bibliotecafxv.controller.LoginController"
+           stylesheets="@../css/style.css">
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+    <VBox alignment="CENTER"
+          spacing="15"
+          maxWidth="320"
+          styleClass="card">
 
-<VBox spacing="10" alignment="CENTER"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.bibliotecafxv.controller.LoginController"
-      style="-fx-padding: 20;">
+        <Label text="Biblioteca" styleClass="titulo"/>
+        <Label text="Iniciar sesión" styleClass="subtitulo"/>
 
-    <Label text="Login" style="-fx-font-size: 20px;"/>
+        <TextField fx:id="txtCorreo" promptText="Correo" styleClass="input"/>
+        <PasswordField fx:id="txtPassword" promptText="Contraseña" styleClass="input"/>
 
-    <TextField fx:id="txtCorreo" promptText="Correo"/>
-    <PasswordField fx:id="txtPassword" promptText="Contraseña"/>
+        <Button text="Iniciar sesión"
+                onAction="#login"
+                maxWidth="Infinity"
+                styleClass="btn-primary"/>
 
-    <Button text="Iniciar sesión" onAction="#login"/>
-    <Button text="Crear cuenta" onAction="#irRegistro"/>
+        <Button text="Crear cuenta"
+                onAction="#irRegistro"
+                maxWidth="Infinity"
+                styleClass="btn-secondary"/>
 
-    <Label fx:id="lblMensaje"/>
+        <Label fx:id="lblMensaje" styleClass="error"/>
 
-</VBox>
+    </VBox>
+
+</StackPane>
