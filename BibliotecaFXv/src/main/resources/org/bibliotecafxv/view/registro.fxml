@@ -3,10 +3,16 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<<<<<<< Updated upstream
 <VBox spacing="10" alignment="CENTER"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.bibliotecafxv.controller.RegistroController"
       style="-fx-padding: 20;">
+=======
+<StackPane xmlns:fx="http://javafx.com/fxml"
+           fx:controller="org.bibliotecafxv.controller.RegistroController"
+           stylesheets="@../css/login.css">
+>>>>>>> Stashed changes
 
     <Label text="Crear cuenta" style="-fx-font-size: 20px;"/>
 
