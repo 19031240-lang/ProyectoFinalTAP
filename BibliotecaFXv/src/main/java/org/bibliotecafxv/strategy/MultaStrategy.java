@@ -1,4 +1,6 @@
 package org.bibliotecafxv.strategy;
 
-public class MultaStrategy {
+public interface MultaStrategy {
+
+    double calcularMulta(int diasRetraso);
 }

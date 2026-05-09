@@ -1,4 +1,6 @@
 package org.bibliotecafxv.observer;
 
-public class Observer {
+public interface Observer {
+
+    void actualizar(String mensaje);
 }
