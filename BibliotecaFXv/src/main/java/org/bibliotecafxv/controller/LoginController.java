@@ -1,10 +1,7 @@
 package org.bibliotecafxv.controller;
-
-<<<<<<< Updated upstream
-=======
 import javafx.animation.TranslateTransition;
->>>>>>> Stashed changes
 import javafx.fxml.FXML;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import org.bibliotecafxv.dao.UsuarioDAO;
 import org.bibliotecafxv.model.Usuario;
@@ -12,10 +9,7 @@ import org.bibliotecafxv.util.HashUtil;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
 
 
 public class LoginController {
@@ -56,10 +50,6 @@ public class LoginController {
         }
     }
 
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
     @FXML
     public void irRegistro() {
         try {
