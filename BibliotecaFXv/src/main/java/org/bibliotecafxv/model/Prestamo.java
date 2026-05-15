@@ -12,6 +12,8 @@ public class Prestamo {
     private LocalDate fechaDevolucion;
 
     private String estado;
+    private String nombreUsuario;
+    private String tituloLibro;
 
     public Prestamo() {
     }
@@ -31,6 +33,7 @@ public class Prestamo {
         this.estado = estado;
     }
 
+    // --- GETTERS ORIGINALES ---
     public int getId() {
         return id;
     }
@@ -55,6 +58,7 @@ public class Prestamo {
         return estado;
     }
 
+    // --- SETTERS ORIGINALES ---
     public void setId(int id) {
         this.id = id;
     }
@@ -77,5 +81,21 @@ public class Prestamo {
 
     public void setEstado(String estado) {
         this.estado = estado;
+    }
+
+    public String getNombreUsuario() {
+        return nombreUsuario;
+    }
+
+    public void setNombreUsuario(String nombreUsuario) {
+        this.nombreUsuario = nombreUsuario;
+    }
+
+    public String getTituloLibro() {
+        return tituloLibro;
+    }
+
+    public void setTituloLibro(String tituloLibro) {
+        this.tituloLibro = tituloLibro;
     }
 }

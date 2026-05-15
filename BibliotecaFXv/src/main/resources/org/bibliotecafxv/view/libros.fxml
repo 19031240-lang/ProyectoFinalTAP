@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.bibliotecafxv.controller.LibroController"
+            stylesheets="@../css/dashboard.css">
+
+    <!-- TOP -->
+    <top>
+        <HBox spacing="10"
+              alignment="CENTER_LEFT"
+              style="-fx-padding: 15;">
+
+            <Label text="Gestión de Libros"
+                   style="-fx-font-size: 22px; -fx-font-weight: bold;" />
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <TextField fx:id="txtBuscar"
+                       promptText="Buscar libro..." />
+
+            <Button text="Buscar"
+                    onAction="#buscarLibro"/>
+        </HBox>
+    </top>
+
+    <!-- CENTER -->
+    <center>
+
+        <TableView fx:id="tblLibros">
+
+            <columns>
+
+                <TableColumn fx:id="colId"
+                             text="ID"
+                             prefWidth="60"/>
+
+                <TableColumn fx:id="colTitulo"
+                             text="Título"
+                             prefWidth="180"/>
+
+                <TableColumn fx:id="colAutor"
+                             text="Autor"
+                             prefWidth="150"/>
+
+                <TableColumn fx:id="colCategoria"
+                             text="Categoría"
+                             prefWidth="120"/>
+
+                <TableColumn fx:id="colDisponible"
+                             text="Disponible"
+                             prefWidth="100"/>
+
+                <TableColumn fx:id="colDescripcion"
+                             text="Descripción"
+                             prefWidth="250"/>
+
+            </columns>
+
+
+        </TableView>
+
+    </center>
+
+    <!-- RIGHT -->
+    <right>
+
+        <VBox spacing="10"
+              styleClass="card"
+              prefWidth="300"
+              style="-fx-padding: 20;">
+
+            <Label text="Formulario Libro"
+                   style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+
+            <TextField fx:id="txtTitulo"
+                       promptText="Título"/>
+
+            <TextField fx:id="txtAutor"
+                       promptText="Autor"/>
+
+            <TextField fx:id="txtCategoria"
+                       promptText="Categoría"/>
+            <CheckBox fx:id="chkDisponible" text="Disponible"/>
+
+            <TextArea fx:id="txtDescripcion"
+                      promptText="Descripción"
+                      prefHeight="120"/>
+
+            <TextField fx:id="txtPortada"
+                       promptText="Ruta portada"/>
+
+            <Button text="Guardar"
+                    styleClass="btn-primary"
+                    onAction="#guardarLibro"/>
+
+            <Button text="Actualizar"
+                    styleClass="btn-secondary"
+                    onAction="#actualizarLibro"/>
+
+            <Button text="Eliminar"
+                    onAction="#eliminarLibro"/>
+
+        </VBox>
+
+    </right>
+
+</BorderPane>

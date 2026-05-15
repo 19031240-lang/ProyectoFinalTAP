@@ -24,8 +24,12 @@ public class Main extends Application {
         FXMLLoader loader = new FXMLLoader(url);
 
         Scene scene = new Scene(loader.load());
+
         stage.setTitle("Biblioteca");
         stage.setScene(scene);
+
+        stage.setMaximized(true);
+
         stage.show();
     }
 

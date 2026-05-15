@@ -1,33 +1,44 @@
-<<<<<<< Updated upstream
 <?xml version="1.0" encoding="UTF-8"?>
-=======
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.PasswordField?>
-<?import javafx.scene.control.Button?>
-<StackPane xmlns:fx="http://javafx.com/fxml"
-           fx:controller="org.bibliotecafxv.controller.LoginController"
-           stylesheets="@../css/login.css">
->>>>>>> Stashed changes
 
+<?import javafx.geometry.Pos?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox spacing="10" alignment="CENTER"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.bibliotecafxv.controller.LoginController"
-      style="-fx-padding: 20;">
+<StackPane xmlns:fx="http://javafx.com/fxml"
+           fx:controller="org.bibliotecafxv.controller.LoginController"
+           stylesheets="@../css/login.css"
+           alignment="CENTER">
 
-    <Label text="Login" style="-fx-font-size: 20px;"/>
+    <VBox spacing="15"
+          alignment="CENTER"
+          styleClass="card"
+          maxWidth="350">
 
-    <TextField fx:id="txtCorreo" promptText="Correo"/>
-    <PasswordField fx:id="txtPassword" promptText="Contraseña"/>
+        <Label text="Biblioteca Digital"
+               styleClass="titulo"/>
 
-    <Button text="Iniciar sesión" onAction="#login"/>
-    <Button text="Crear cuenta" onAction="#irRegistro"/>
+        <Label text="Iniciar sesión"
+               styleClass="subtitulo"/>
 
-    <Label fx:id="lblMensaje"/>
+        <TextField fx:id="txtCorreo"
+                   promptText="Correo"
+                   styleClass="input"/>
 
-</VBox>
+        <PasswordField fx:id="txtPassword"
+                       promptText="Contraseña"
+                       styleClass="input"/>
+
+        <Button text="Ingresar"
+                onAction="#login"
+                styleClass="btn-primary"/>
+
+        <Button text="Crear cuenta"
+                onAction="#irRegistro"
+                styleClass="btn-secondary"/>
+
+        <Label fx:id="lblMensaje"
+               styleClass="error"/>
+
+    </VBox>
+
+</StackPane>

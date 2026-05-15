@@ -1,0 +1,194 @@
+/* Color de fondo principal */
+.fondo-principal {
+    -fx-background-color: #f8f6f2;
+}
+
+/* Panel Lateral (Sidebar) */
+.sidebar {
+    -fx-background-color: #f8f6f2;
+    -fx-padding: 30 20 20 20;
+    -fx-spacing: 15;
+    -fx-pref-width: 250;
+}
+
+.logo-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333333;
+    -fx-padding: 0 0 30 0;
+}
+
+/* Botones del menú */
+.menu-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #555555;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 12 20;
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+}
+
+.menu-button:hover {
+    -fx-background-color: #e8e4dc;
+}
+
+/* Botón activo (morado) */
+.menu-button-active {
+    -fx-background-color: #645a8f;
+    -fx-text-fill: white;
+}
+
+/* Barra de búsqueda superior */
+.search-field {
+    -fx-background-color: white;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+    -fx-border-color: #e0e0e0;
+    -fx-padding: 10 20;
+    -fx-font-size: 14px;
+}
+
+.admin-label {
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 0 0 0 15;
+}
+
+/* Tarjetas (Estadísticas y Calendario) */
+.card, .calendar-card {
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-padding: 20;
+    -fx-spacing: 10;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.04), 10, 0, 0, 4);
+}
+
+.card-title, .section-title {
+    -fx-text-fill: #888888;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.card-number {
+    -fx-text-fill: #222222;
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+}
+
+/* ========================================= */
+/* TARJETAS DE LIBROS DINÁMICAS        */
+/* ========================================= */
+
+.book-card {
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-padding: 15;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);
+    -fx-alignment: top-left;
+}
+
+/* Estilo para cuando pasas el mouse por la imagen */
+.book-card ImageView {
+    -fx-cursor: hand;
+}
+
+/* Lo dejamos por si una URL falla o está vacía */
+.book-cover-placeholder {
+    -fx-background-color: #e8e4dc;
+    -fx-background-radius: 10;
+    -fx-min-width: 130px;
+    -fx-min-height: 180px;
+    -fx-alignment: center;
+    -fx-font-size: 50px;
+}
+
+.book-title {
+    -fx-font-weight: bold;
+    -fx-font-size: 13px; /* Reducido para que quepa bien en dos líneas */
+    -fx-text-fill: #2c3e50;
+    -fx-max-width: 130px;
+    -fx-max-height: 40px; /* Evita que el título estire demasiado la tarjeta */
+}
+
+.book-author {
+    -fx-font-size: 12px;
+    -fx-text-fill: #7f8c8d;
+}
+
+/* Etiquetas de estado */
+.badge-disponible {
+    -fx-background-color: #d4edda;
+    -fx-text-fill: #155724;
+    -fx-padding: 3 8;
+    -fx-background-radius: 10;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.badge-prestado {
+    -fx-background-color: #f8d7da;
+    -fx-text-fill: #721c24;
+    -fx-padding: 3 8;
+    -fx-background-radius: 10;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+/* ========================================= */
+/* CALENDARIO PERSONALIZADO                  */
+/* ========================================= */
+
+.calendar-day {
+    -fx-min-width: 32px;
+    -fx-min-height: 32px;
+    -fx-alignment: center;
+    -fx-background-radius: 16; /* La mitad del ancho/alto para hacerlo círculo */
+    -fx-font-size: 13px;
+    -fx-text-fill: #555555;
+}
+
+/* Efecto al pasar el mouse */
+.calendar-day:hover {
+    -fx-background-color: #e8e4dc;
+    -fx-cursor: hand;
+}
+
+/* ESTILO PARA LOS DÍAS MARCADOS (ENTREGA DE LIBROS) */
+.calendar-day-due {
+    -fx-background-color: #ff6b6b; /* Un rojo suave/coral */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(three-pass-box, rgba(255, 107, 107, 0.4), 8, 0, 0, 3);
+}
+
+.calendar-day-due:hover {
+    -fx-background-color: #ff5252;
+}
+
+/* Estilo para la Tabla */
+.table-view {
+    -fx-background-color: transparent;
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 5;
+}
+
+.table-view .column-header {
+    -fx-background-color: #f8f6f2;
+    -fx-text-fill: #555555;
+    -fx-font-weight: bold;
+}
+
+.table-view .cell {
+    -fx-text-fill: #333333;
+}
+
+/* Estilo para la Gráfica */
+.chart-bar {
+    -fx-bar-fill: #645a8f;
+}
+
+.chart-plot-background {
+    -fx-background-color: transparent;
+}

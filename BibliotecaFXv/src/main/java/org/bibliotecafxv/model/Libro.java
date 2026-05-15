@@ -6,21 +6,28 @@ public class Libro {
     private String titulo;
     private String autor;
     private String categoria;
-    private int cantidad;
+    private boolean disponible;
+    private String descripcion;
+    private String portada;
 
     public Libro() {
     }
 
-    public Libro(int id, String titulo,
+    public Libro(int id,
+                 String titulo,
                  String autor,
                  String categoria,
-                 int cantidad) {
+                 boolean disponible,
+                 String descripcion,
+                 String portada) {
 
         this.id = id;
         this.titulo = titulo;
         this.autor = autor;
         this.categoria = categoria;
-        this.cantidad = cantidad;
+        this.disponible = disponible;
+        this.descripcion = descripcion;
+        this.portada = portada;
     }
 
     public int getId() {
@@ -55,11 +62,27 @@ public class Libro {
         this.categoria = categoria;
     }
 
-    public int getCantidad() {
-        return cantidad;
+    public boolean isDisponible() {
+        return disponible;
     }
 
-    public void setCantidad(int cantidad) {
-        this.cantidad = cantidad;
+    public void setDisponible(boolean disponible) {
+        this.disponible = disponible;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public String getPortada() {
+        return portada;
+    }
+
+    public void setPortada(String portada) {
+        this.portada = portada;
     }
 }

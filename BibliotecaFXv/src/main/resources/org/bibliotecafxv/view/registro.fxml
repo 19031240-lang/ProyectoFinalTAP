@@ -3,26 +3,41 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<<<<<<< Updated upstream
-<VBox spacing="10" alignment="CENTER"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.bibliotecafxv.controller.RegistroController"
-      style="-fx-padding: 20;">
-=======
 <StackPane xmlns:fx="http://javafx.com/fxml"
            fx:controller="org.bibliotecafxv.controller.RegistroController"
            stylesheets="@../css/login.css">
->>>>>>> Stashed changes
 
-    <Label text="Crear cuenta" style="-fx-font-size: 20px;"/>
+    <VBox spacing="10"
+          alignment="CENTER"
+          maxWidth="350"
+          styleClass="card">
 
-    <TextField fx:id="txtNombre" promptText="Nombre"/>
-    <TextField fx:id="txtCorreo" promptText="Correo"/>
-    <PasswordField fx:id="txtPassword" promptText="Contraseña"/>
+        <Label text="Crear cuenta"
+               styleClass="titulo"/>
 
-    <Button text="Registrarse" onAction="#registrar"/>
-    <Button text="Volver al login" onAction="#volverLogin"/>
+        <TextField fx:id="txtNombre"
+                   promptText="Nombre"
+                   styleClass="input"/>
 
-    <Label fx:id="lblMensaje"/>
+        <TextField fx:id="txtCorreo"
+                   promptText="Correo"
+                   styleClass="input"/>
 
-</VBox>
+        <PasswordField fx:id="txtPassword"
+                       promptText="Contraseña"
+                       styleClass="input"/>
+
+        <Button text="Registrarse"
+                onAction="#registrar"
+                styleClass="btn-primary"/>
+
+        <Button text="Volver al login"
+                onAction="#volverLogin"
+                styleClass="btn-secondary"/>
+
+        <Label fx:id="lblMensaje"
+               styleClass="error"/>
+
+    </VBox>
+
+</StackPane>
