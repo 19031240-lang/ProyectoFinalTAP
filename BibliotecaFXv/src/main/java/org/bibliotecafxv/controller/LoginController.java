@@ -11,9 +11,11 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class LoginController {
+
     @FXML private TextField txtCorreo;
     @FXML private PasswordField txtPassword;
     @FXML private Label lblMensaje;
+
 
     @FXML
     public void login() {
@@ -30,16 +32,24 @@ public class LoginController {
 
             if (hash.equals(usuario.getPassword())) {
 
-                FXMLLoader loader = new FXMLLoader(
-                        getClass().getResource("/org/bibliotecafxv/view/dashboard.fxml")
-                );
+                String vistaDestino;
+                if ("ADMIN".equals(usuario.getRol())) {
+                    vistaDestino = "/org/bibliotecafxv/view/dashboard.fxml";
+                } else {
+                    vistaDestino = "/org/bibliotecafxv/view/catalogo_usuario.fxml";
+                }
 
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(vistaDestino));
                 Parent root = loader.load();
+
+                // --- AQUÍ PASAMOS EL USUARIO AL CATÁLOGO ---
+                if ("USER".equals(usuario.getRol())) {
+                    org.bibliotecafxv.controller.CatalogoUsuarioController controller = loader.getController();
+                    controller.setUsuarioLogueado(usuario);
+                }
 
                 Stage stage = (Stage) txtCorreo.getScene().getWindow();
                 stage.getScene().setRoot(root);
-
-                // Aseguramos que el Dashboard se quede maximizado
                 stage.setMaximized(true);
 
             } else {
@@ -60,8 +70,6 @@ public class LoginController {
 
             Stage stage = (Stage) txtCorreo.getScene().getWindow();
             stage.setScene(new Scene(loader.load()));
-
-            // ¡Evitamos que se haga chiquita al ir a crear cuenta!
             stage.setMaximized(true);
 
         } catch (Exception e) {
