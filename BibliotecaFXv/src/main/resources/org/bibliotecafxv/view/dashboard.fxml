@@ -15,12 +15,12 @@
     <left>
         <VBox styleClass="sidebar">
             <Label text="📚 Biblioteca Digital" styleClass="logo-title"/>
-            <Button text="🏠 Dashboard" styleClass="menu-button, menu-button-active" onAction="#abrirDashboard"/>
-            <Button text="📘 Libros" styleClass="menu-button" onAction="#abrirLibros"/>
-            <Button text="👤 Usuarios" styleClass="menu-button" onAction="#abrirUsuarios"/>
-            <Button text="🔄 Préstamos" styleClass="menu-button" onAction="#abrirPrestamos"/>
-            <Button text="📊 Reportes" styleClass="menu-button" onAction="#abrirReportes"/>
-            <Button text="🔖 Reservas" styleClass="menu-button" onAction="#abrirReservas"/>
+            <Button text="🏠 Dashboard"  styleClass="menu-button, menu-button-active" onAction="#abrirDashboard"/>
+            <Button text="📘 Libros"     styleClass="menu-button" onAction="#abrirLibros"/>
+            <Button text="👤 Usuarios"   styleClass="menu-button" onAction="#abrirUsuarios"/>
+            <Button text="🔄 Préstamos"  styleClass="menu-button" onAction="#abrirPrestamos"/>
+            <Button text="📊 Reportes"   styleClass="menu-button" onAction="#abrirReportes"/>
+            <Button text="🔖 Reservas"   styleClass="menu-button" onAction="#abrirReservas"/>
         </VBox>
     </left>
 
@@ -30,24 +30,24 @@
                 <Insets top="20" right="20" bottom="20" left="20"/>
             </padding>
 
-            <HBox styleClass="topbar" alignment="CENTER_LEFT">
-                <TextField promptText="Buscar libros, autores..." styleClass="search-field" prefWidth="400"/>
-                <Pane HBox.hgrow="ALWAYS"/>
+            <!-- Topbar SIN buscador, solo notificación y usuario -->
+            <HBox styleClass="topbar" alignment="CENTER_RIGHT" spacing="10">
                 <Label text="🔔" styleClass="icon-bell"/>
                 <Label text="Administrador" styleClass="admin-label"/>
             </HBox>
 
+            <!-- Tarjetas de estadísticas -->
             <HBox spacing="20">
                 <VBox styleClass="card" prefWidth="220">
-                    <Label text="Total libros" styleClass="card-title"/>
-                    <Label fx:id="lblTotalLibros" text="0" styleClass="card-number"/>
+                    <Label text="Total libros"  styleClass="card-title"/>
+                    <Label fx:id="lblTotalLibros"   text="0" styleClass="card-number"/>
                 </VBox>
                 <VBox styleClass="card" prefWidth="220">
-                    <Label text="Usuarios" styleClass="card-title"/>
-                    <Label fx:id="lblTotalUsuarios" text="0" styleClass="card-number"/>
+                    <Label text="Usuarios"      styleClass="card-title"/>
+                    <Label fx:id="lblTotalUsuarios"  text="0" styleClass="card-number"/>
                 </VBox>
                 <VBox styleClass="card" prefWidth="220">
-                    <Label text="Préstamos" styleClass="card-title"/>
+                    <Label text="Préstamos"     styleClass="card-title"/>
                     <Label fx:id="lblTotalPrestamos" text="0" styleClass="card-number"/>
                 </VBox>
             </HBox>
@@ -64,12 +64,13 @@
                 <Label text="Préstamos Recientes" styleClass="section-title"/>
                 <TableView fx:id="tablaPrestamos" VBox.vgrow="ALWAYS">
                     <columns>
-                        <TableColumn fx:id="colUsuario" text="Usuario" prefWidth="200"/>
-                        <TableColumn fx:id="colLibro" text="Libro" prefWidth="250"/>
-                        <TableColumn fx:id="colFecha" text="Fecha Devolución" prefWidth="150"/>
+                        <TableColumn fx:id="colUsuario" text="Usuario"           prefWidth="200"/>
+                        <TableColumn fx:id="colLibro"   text="Libro"             prefWidth="250"/>
+                        <TableColumn fx:id="colFecha"   text="Fecha Devolución"  prefWidth="150"/>
                     </columns>
                 </TableView>
             </VBox>
+
         </VBox>
     </center>
 
@@ -87,11 +88,11 @@
             <VBox styleClass="card" spacing="10" VBox.vgrow="ALWAYS">
                 <Label text="Actividad Semanal" styleClass="section-title"/>
                 <BarChart fx:id="graficaPrestamos" legendVisible="false" VBox.vgrow="ALWAYS">
-                    <xAxis><CategoryAxis side="BOTTOM" /></xAxis>
-                    <yAxis><NumberAxis side="LEFT" /></yAxis>
+                    <xAxis><CategoryAxis side="BOTTOM"/></xAxis>
+                    <yAxis><NumberAxis side="LEFT"/></yAxis>
                 </BarChart>
             </VBox>
-
+bag
         </VBox>
     </right>
 

@@ -1,5 +1,5 @@
 package org.bibliotecafxv.controller;
-import javafx.animation.TranslateTransition;
+
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
@@ -9,8 +9,6 @@ import org.bibliotecafxv.util.HashUtil;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
-
 
 public class LoginController {
     @FXML private TextField txtCorreo;

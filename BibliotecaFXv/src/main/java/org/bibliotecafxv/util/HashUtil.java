@@ -19,4 +19,5 @@ public class HashUtil {
             throw new RuntimeException(e);
         }
     }
+
 }

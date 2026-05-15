@@ -1,110 +1,98 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.bibliotecafxv.controller.LibroController"
-            stylesheets="@../css/dashboard.css">
+<VBox spacing="20" styleClass="fondo-principal" stylesheets="@../css/dashboard.css"
+      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.bibliotecafxv.controller.LibroController">
 
-    <!-- TOP -->
-    <top>
-        <HBox spacing="10"
-              alignment="CENTER_LEFT"
-              style="-fx-padding: 15;">
+    <padding>
+        <Insets bottom="20" left="20" right="20" top="20" />
+    </padding>
 
-            <Label text="Gestión de Libros"
-                   style="-fx-font-size: 22px; -fx-font-weight: bold;" />
+    <Label styleClass="section-title" text="Gestión de Libros" />
 
-            <Region HBox.hgrow="ALWAYS"/>
+    <HBox spacing="20" VBox.vgrow="ALWAYS">
 
-            <TextField fx:id="txtBuscar"
-                       promptText="Buscar libro..." />
+        <!-- Panel izquierdo: formulario -->
+        <VBox prefWidth="300" spacing="15" styleClass="card">
+            <Label styleClass="section-title" text="Datos del Libro" />
 
-            <Button text="Buscar"
-                    onAction="#buscarLibro"/>
-        </HBox>
-    </top>
+            <VBox spacing="5">
+                <Label text="Título:" />
+                <TextField fx:id="txtTitulo" promptText="Ej. Cien años de soledad" styleClass="search-field" />
+            </VBox>
 
-    <!-- CENTER -->
-    <center>
+            <VBox spacing="5">
+                <Label text="Autor:" />
+                <TextField fx:id="txtAutor" promptText="Ej. Gabriel García Márquez" styleClass="search-field" />
+            </VBox>
 
-        <TableView fx:id="tblLibros">
+            <VBox spacing="5">
+                <Label text="Categoría:" />
+                <TextField fx:id="txtCategoria" promptText="Ej. Novela" styleClass="search-field" />
+            </VBox>
 
-            <columns>
+            <VBox spacing="5">
+                <Label text="Descripción:" />
+                <TextArea fx:id="txtDescripcion" promptText="Breve descripción del libro..."
+                          prefHeight="90" styleClass="search-field" wrapText="true"/>
+            </VBox>
 
-                <TableColumn fx:id="colId"
-                             text="ID"
-                             prefWidth="60"/>
+            <VBox spacing="5">
+                <Label text="Ruta de portada:" />
+                <TextField fx:id="txtPortada" promptText="Ej. /img/portada.jpg" styleClass="search-field" />
+            </VBox>
 
-                <TableColumn fx:id="colTitulo"
-                             text="Título"
-                             prefWidth="180"/>
+            <CheckBox fx:id="chkDisponible" text="Disponible" selected="true" />
 
-                <TableColumn fx:id="colAutor"
-                             text="Autor"
-                             prefWidth="150"/>
-
-                <TableColumn fx:id="colCategoria"
-                             text="Categoría"
-                             prefWidth="120"/>
-
-                <TableColumn fx:id="colDisponible"
-                             text="Disponible"
-                             prefWidth="100"/>
-
-                <TableColumn fx:id="colDescripcion"
-                             text="Descripción"
-                             prefWidth="250"/>
-
-            </columns>
-
-
-        </TableView>
-
-    </center>
-
-    <!-- RIGHT -->
-    <right>
-
-        <VBox spacing="10"
-              styleClass="card"
-              prefWidth="300"
-              style="-fx-padding: 20;">
-
-            <Label text="Formulario Libro"
-                   style="-fx-font-size: 18px; -fx-font-weight: bold;" />
-
-            <TextField fx:id="txtTitulo"
-                       promptText="Título"/>
-
-            <TextField fx:id="txtAutor"
-                       promptText="Autor"/>
-
-            <TextField fx:id="txtCategoria"
-                       promptText="Categoría"/>
-            <CheckBox fx:id="chkDisponible" text="Disponible"/>
-
-            <TextArea fx:id="txtDescripcion"
-                      promptText="Descripción"
-                      prefHeight="120"/>
-
-            <TextField fx:id="txtPortada"
-                       promptText="Ruta portada"/>
-
-            <Button text="Guardar"
-                    styleClass="btn-primary"
-                    onAction="#guardarLibro"/>
-
-            <Button text="Actualizar"
-                    styleClass="btn-secondary"
-                    onAction="#actualizarLibro"/>
-
-            <Button text="Eliminar"
-                    onAction="#eliminarLibro"/>
-
+            <!-- Botones -->
+            <HBox spacing="8" alignment="CENTER">
+                <Button text="Guardar"
+                        styleClass="menu-button-active"
+                        onAction="#guardarLibro"
+                        prefWidth="85"/>
+                <Button text="Actualizar"
+                        styleClass="menu-button-active"
+                        onAction="#actualizarLibro"
+                        prefWidth="85"/>
+                <Button text="Limpiar"
+                        styleClass="menu-button"
+                        onAction="#limpiarFormulario"
+                        prefWidth="85"/>
+            </HBox>
         </VBox>
 
-    </right>
+        <!-- Panel derecho: tabla -->
+        <VBox spacing="10" styleClass="card" HBox.hgrow="ALWAYS">
 
-</BorderPane>
+            <!-- Barra de búsqueda -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label styleClass="section-title" text="Lista de Libros" HBox.hgrow="ALWAYS"/>
+                <TextField fx:id="txtBuscar" promptText="Buscar libro..." styleClass="search-field" prefWidth="200"/>
+                <Button text="Buscar" styleClass="menu-button" onAction="#buscarLibro"/>
+            </HBox>
+
+            <TableView fx:id="tblLibros" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="colId"          prefWidth="50"  text="ID"          />
+                    <TableColumn fx:id="colTitulo"       prefWidth="180" text="Título"       />
+                    <TableColumn fx:id="colAutor"        prefWidth="140" text="Autor"        />
+                    <TableColumn fx:id="colCategoria"    prefWidth="110" text="Categoría"    />
+                    <TableColumn fx:id="colDisponible"   prefWidth="90"  text="Disponible"   />
+                    <TableColumn fx:id="colDescripcion"  prefWidth="220" text="Descripción"  />
+                </columns>
+            </TableView>
+
+            <HBox alignment="CENTER_RIGHT" spacing="10">
+                <Button text="Eliminar Seleccionado"
+                        styleClass="menu-button"
+                        style="-fx-text-fill: red;"
+                        onAction="#eliminarLibro"/>
+            </HBox>
+        </VBox>
+
+    </HBox>
+</VBox>

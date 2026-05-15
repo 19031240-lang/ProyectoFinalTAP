@@ -1,5 +1,7 @@
 package org.bibliotecafxv.controller;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -8,146 +10,187 @@ import org.bibliotecafxv.model.Libro;
 
 public class LibroController {
 
-    @FXML private TableView<Libro> tblLibros;
-
-    @FXML private TableColumn<Libro, Integer> colId;
-    @FXML private TableColumn<Libro, String> colTitulo;
-    @FXML private TableColumn<Libro, String> colAutor;
-    @FXML private TableColumn<Libro, String> colCategoria;
-    @FXML private TableColumn<Libro, String> colDescripcion;
-
     @FXML private TextField txtTitulo;
     @FXML private TextField txtAutor;
     @FXML private TextField txtCategoria;
-    @FXML private CheckBox chkDisponible;
-
-    @FXML private TextArea txtDescripcion;
+    @FXML private TextArea  txtDescripcion;
     @FXML private TextField txtPortada;
+    @FXML private CheckBox  chkDisponible;
     @FXML private TextField txtBuscar;
 
-    private final LibroDAO dao = new LibroDAO();
+    @FXML private TableView<Libro>              tblLibros;
+    @FXML private TableColumn<Libro, Integer>   colId;
+    @FXML private TableColumn<Libro, String>    colTitulo;
+    @FXML private TableColumn<Libro, String>    colAutor;
+    @FXML private TableColumn<Libro, String>    colCategoria;
+    @FXML private TableColumn<Libro, Boolean>   colDisponible;
+    @FXML private TableColumn<Libro, String>    colDescripcion;
+
+    private LibroDAO libroDAO;
+    private ObservableList<Libro> listaLibros;
+    private Libro libroSeleccionado;
 
     @FXML
     public void initialize() {
 
-        colId.setCellValueFactory(
-                new PropertyValueFactory<>("id"));
+        libroDAO = new LibroDAO();
 
-        colTitulo.setCellValueFactory(
-                new PropertyValueFactory<>("titulo"));
+        configurarTabla();
+        cargarDatos();
 
-        colAutor.setCellValueFactory(
-                new PropertyValueFactory<>("autor"));
-
-        colCategoria.setCellValueFactory(
-                new PropertyValueFactory<>("categoria"));
-
-        colDescripcion.setCellValueFactory(
-                new PropertyValueFactory<>("descripcion"));
-
-        cargarLibros();
-
-        tblLibros.getSelectionModel().selectedItemProperty()
-                .addListener((obs, oldValue, libro) -> {
-
-                    if (libro != null) {
-
-                        txtTitulo.setText(libro.getTitulo());
-                        txtAutor.setText(libro.getAutor());
-                        txtCategoria.setText(libro.getCategoria());
-
-                        chkDisponible.setSelected(
-                                libro.isDisponible()
-                        );
-
-                        txtDescripcion.setText(
-                                libro.getDescripcion()
-                        );
-
-                        txtPortada.setText(
-                                libro.getPortada()
-                        );
-                    }
-                });
+        tblLibros.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> seleccionarLibro(newValue)
+        );
     }
 
-    private void cargarLibros() {
-        tblLibros.getItems().setAll(dao.listar());
+    private void configurarTabla() {
+
+        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        colTitulo.setCellValueFactory(new PropertyValueFactory<>("titulo"));
+        colAutor.setCellValueFactory(new PropertyValueFactory<>("autor"));
+        colCategoria.setCellValueFactory(new PropertyValueFactory<>("categoria"));
+        colDisponible.setCellValueFactory(new PropertyValueFactory<>("disponible"));
+        colDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
+    }
+
+    private void cargarDatos() {
+
+        listaLibros = FXCollections.observableArrayList(libroDAO.listar());
+        tblLibros.setItems(listaLibros);
+    }
+
+    private void seleccionarLibro(Libro libro) {
+
+        if (libro != null) {
+
+            libroSeleccionado = libro;
+
+            txtTitulo.setText(libro.getTitulo());
+            txtAutor.setText(libro.getAutor());
+            txtCategoria.setText(libro.getCategoria());
+            txtDescripcion.setText(libro.getDescripcion());
+            txtPortada.setText(libro.getPortada());
+            chkDisponible.setSelected(libro.isDisponible());
+        }
     }
 
     @FXML
     private void guardarLibro() {
 
-        Libro libro = new Libro(
-                0,
-                txtTitulo.getText(),
-                txtAutor.getText(),
-                txtCategoria.getText(),
-                chkDisponible.isSelected(),
-                txtDescripcion.getText(),
-                txtPortada.getText()
-        );
+        if (libroSeleccionado != null) {
+            mostrarAlerta("Atención",
+                    "Hay un libro seleccionado. Usa 'Actualizar' para modificarlo o 'Limpiar' para agregar uno nuevo.",
+                    Alert.AlertType.WARNING);
+            return;
+        }
 
-        dao.guardar(libro);
+        if (txtTitulo.getText().isEmpty() || txtAutor.getText().isEmpty()) {
+            mostrarAlerta("Error",
+                    "El título y el autor son obligatorios.",
+                    Alert.AlertType.ERROR);
+            return;
+        }
 
-        cargarLibros();
-        limpiarCampos();
+        Libro nuevo = new Libro();
+        nuevo.setTitulo(txtTitulo.getText());
+        nuevo.setAutor(txtAutor.getText());
+        nuevo.setCategoria(txtCategoria.getText());
+        nuevo.setDescripcion(txtDescripcion.getText());
+        nuevo.setPortada(txtPortada.getText());
+        nuevo.setDisponible(chkDisponible.isSelected());
+
+        libroDAO.guardar(nuevo);
+
+        mostrarAlerta("Éxito", "Libro guardado correctamente.", Alert.AlertType.INFORMATION);
+        limpiarFormulario();
+        cargarDatos();
     }
 
     @FXML
     private void actualizarLibro() {
 
-        Libro libro = tblLibros.getSelectionModel().getSelectedItem();
+        if (libroSeleccionado == null) {
+            mostrarAlerta("Atención",
+                    "Selecciona un libro de la tabla para actualizarlo.",
+                    Alert.AlertType.WARNING);
+            return;
+        }
 
-        if (libro == null) return;
+        if (txtTitulo.getText().isEmpty() || txtAutor.getText().isEmpty()) {
+            mostrarAlerta("Error",
+                    "El título y el autor son obligatorios.",
+                    Alert.AlertType.ERROR);
+            return;
+        }
 
-        libro.setTitulo(txtTitulo.getText());
-        libro.setAutor(txtAutor.getText());
-        libro.setCategoria(txtCategoria.getText());
+        libroSeleccionado.setTitulo(txtTitulo.getText());
+        libroSeleccionado.setAutor(txtAutor.getText());
+        libroSeleccionado.setCategoria(txtCategoria.getText());
+        libroSeleccionado.setDescripcion(txtDescripcion.getText());
+        libroSeleccionado.setPortada(txtPortada.getText());
+        libroSeleccionado.setDisponible(chkDisponible.isSelected());
 
-        libro.setDisponible(
-                chkDisponible.isSelected()
-        );
+        libroDAO.actualizar(libroSeleccionado);
 
-        libro.setDescripcion(txtDescripcion.getText());
-        libro.setPortada(txtPortada.getText());
-
-        dao.actualizar(libro);
-
-        cargarLibros();
-        limpiarCampos();
+        mostrarAlerta("Éxito", "Libro actualizado correctamente.", Alert.AlertType.INFORMATION);
+        cargarDatos();
+        limpiarFormulario();
     }
 
     @FXML
     private void eliminarLibro() {
 
-        Libro libro = tblLibros.getSelectionModel().getSelectedItem();
+        Libro seleccionado = tblLibros.getSelectionModel().getSelectedItem();
 
-        if (libro == null) return;
+        if (seleccionado == null) {
+            mostrarAlerta("Atención",
+                    "Selecciona un libro de la tabla.",
+                    Alert.AlertType.WARNING);
+            return;
+        }
 
-        dao.eliminar(libro.getId());
+        libroDAO.eliminar(seleccionado.getId());
 
-        cargarLibros();
-        limpiarCampos();
+        mostrarAlerta("Éxito", "Libro eliminado.", Alert.AlertType.INFORMATION);
+        cargarDatos();
+        limpiarFormulario();
     }
 
     @FXML
     private void buscarLibro() {
 
-        tblLibros.getItems().setAll(
-                dao.buscarPorTitulo(txtBuscar.getText())
-        );
+        String texto = txtBuscar.getText().trim();
+
+        if (texto.isEmpty()) {
+            cargarDatos();
+            return;
+        }
+
+        listaLibros = FXCollections.observableArrayList(libroDAO.buscarPorTitulo(texto));
+        tblLibros.setItems(listaLibros);
     }
 
-    private void limpiarCampos() {
+    @FXML
+    private void limpiarFormulario() {
 
         txtTitulo.clear();
         txtAutor.clear();
         txtCategoria.clear();
-
-        chkDisponible.setSelected(false);
-
         txtDescripcion.clear();
         txtPortada.clear();
+        txtBuscar.clear();
+        chkDisponible.setSelected(true);
+
+        libroSeleccionado = null;
+        tblLibros.getSelectionModel().clearSelection();
+    }
+
+    private void mostrarAlerta(String titulo, String contenido, Alert.AlertType tipo) {
+
+        Alert alert = new Alert(tipo);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(contenido);
+        alert.showAndWait();
     }
 }
