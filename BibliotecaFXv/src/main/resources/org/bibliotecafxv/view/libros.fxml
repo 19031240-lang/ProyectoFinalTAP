@@ -43,7 +43,7 @@
 
             <VBox spacing="5">
                 <Label text="Ruta de portada:" />
-                <TextField fx:id="txtPortada" promptText="Ej. /img/portada.jpg" styleClass="search-field" />
+                <TextField fx:id="txtPortada" promptText="Ej. https://imagen.jpg" styleClass="search-field" />
             </VBox>
 
             <CheckBox fx:id="chkDisponible" text="Disponible" selected="true" />

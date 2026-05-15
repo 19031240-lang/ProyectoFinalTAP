@@ -55,7 +55,35 @@ public class PrestamoDAO {
             return false;
         }
     }
+// ... (mismos imports de antes)
 
+    public boolean eliminar(int id) {
+        String sql = "DELETE FROM prestamos WHERE id = ?";
+        try (Connection con = ConexionBD.getInstancia().getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.out.println("Error al eliminar préstamo: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean actualizar(Prestamo p) {
+        String sql = "UPDATE prestamos SET id_usuario = ?, id_libro = ?, fecha_devolucion = ?, estado = ? WHERE id = ?";
+        try (Connection con = ConexionBD.getInstancia().getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, p.getIdUsuario());
+            ps.setInt(2, p.getIdLibro());
+            ps.setDate(3, p.getFechaDevolucion());
+            ps.setString(4, p.getEstado());
+            ps.setInt(5, p.getId());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.out.println("Error al actualizar préstamo: " + e.getMessage());
+            return false;
+        }
+    }
     public boolean marcarComoDevuelto(int idPrestamo) {
         String sql = "UPDATE prestamos SET estado = 'DEVUELTO' WHERE id = ?";
         try (Connection con = ConexionBD.getInstancia().getConexion();

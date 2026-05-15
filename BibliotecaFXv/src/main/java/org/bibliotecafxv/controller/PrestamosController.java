@@ -5,21 +5,19 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import org.bibliotecafxv.dao.LibroDAO;
-import org.bibliotecafxv.dao.PrestamoDAO;
-import org.bibliotecafxv.dao.UsuarioDAO;
-import org.bibliotecafxv.model.Libro;
-import org.bibliotecafxv.model.Prestamo;
-import org.bibliotecafxv.model.Usuario;
-
+import org.bibliotecafxv.dao.*;
+import org.bibliotecafxv.model.*;
+import org.bibliotecafxv.strategy.*;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 public class PrestamosController {
 
     @FXML private ComboBox<Usuario> cmbUsuario;
     @FXML private ComboBox<Libro> cmbLibro;
     @FXML private DatePicker dpFechaDevolucion;
+    @FXML private TextField txtBuscar;
 
     @FXML private TableView<Prestamo> tablaPrestamos;
     @FXML private TableColumn<Prestamo, Integer> colId;
@@ -32,6 +30,7 @@ public class PrestamosController {
     private PrestamoDAO prestamoDAO;
     private UsuarioDAO usuarioDAO;
     private LibroDAO libroDAO;
+    private ObservableList<Prestamo> masterData = FXCollections.observableArrayList();
 
     @FXML
     public void initialize() {
@@ -42,6 +41,12 @@ public class PrestamosController {
         configurarTabla();
         cargarCombos();
         cargarDatosTabla();
+
+        txtBuscar.textProperty().addListener((obs, oldVal, newVal) -> filtrar(newVal));
+
+        tablaPrestamos.getSelectionModel().selectedItemProperty().addListener((obs, oldS, newS) -> {
+            if (newS != null) cargarPrestamoEnFormulario(newS);
+        });
     }
 
     private void configurarTabla() {
@@ -53,73 +58,115 @@ public class PrestamosController {
         colEstado.setCellValueFactory(new PropertyValueFactory<>("estado"));
     }
 
-    private void cargarCombos() {
-        // Cargar usuarios
-        cmbUsuario.setItems(FXCollections.observableArrayList(usuarioDAO.listar()));
-
-        // Cargar solo libros que estén disponibles
-        ObservableList<Libro> librosDisponibles = FXCollections.observableArrayList();
-        for (Libro l : libroDAO.listar()) {
-            if (l.isDisponible()) {
-                librosDisponibles.add(l);
-            }
-        }
-        cmbLibro.setItems(librosDisponibles);
+    private void cargarDatosTabla() {
+        masterData.clear();
+        masterData.addAll(prestamoDAO.listar());
+        tablaPrestamos.setItems(masterData);
     }
 
-    private void cargarDatosTabla() {
-        tablaPrestamos.setItems(FXCollections.observableArrayList(prestamoDAO.listar()));
+    private void filtrar(String valor) {
+        if (valor == null || valor.isEmpty()) {
+            tablaPrestamos.setItems(masterData);
+        } else {
+            String f = valor.toLowerCase();
+            tablaPrestamos.setItems(masterData.filtered(p ->
+                    p.getNombreUsuario().toLowerCase().contains(f) ||
+                            p.getTituloLibro().toLowerCase().contains(f)
+            ));
+        }
+    }
+
+    private void cargarPrestamoEnFormulario(Prestamo p) {
+        cmbUsuario.getItems().stream()
+                .filter(u -> u.getId() == p.getIdUsuario())
+                .findFirst().ifPresent(u -> cmbUsuario.setValue(u));
+
+        cmbLibro.getItems().stream()
+                .filter(l -> l.getId() == p.getIdLibro())
+                .findFirst().ifPresent(l -> cmbLibro.setValue(l));
+
+        dpFechaDevolucion.setValue(p.getFechaDevolucion().toLocalDate());
     }
 
     @FXML
     private void registrarPrestamo() {
-        Usuario user = cmbUsuario.getValue();
-        Libro libro = cmbLibro.getValue();
-        LocalDate fechaDev = dpFechaDevolucion.getValue();
-
-        if (user == null || libro == null || fechaDev == null) {
-            mostrarAlerta("Error", "Todos los campos son obligatorios.", Alert.AlertType.ERROR);
+        Usuario u = cmbUsuario.getValue();
+        Libro l = cmbLibro.getValue();
+        if (u == null || l == null || dpFechaDevolucion.getValue() == null) {
+            mostrarAlerta("Error", "Completa todos los campos", Alert.AlertType.ERROR);
             return;
         }
 
         Prestamo p = new Prestamo();
-        p.setIdUsuario(user.getId());
-        p.setIdLibro(libro.getId());
+        p.setIdUsuario(u.getId());
+        p.setIdLibro(l.getId());
         p.setFechaPrestamo(Date.valueOf(LocalDate.now()));
-        p.setFechaDevolucion(Date.valueOf(fechaDev));
+        p.setFechaDevolucion(Date.valueOf(dpFechaDevolucion.getValue()));
         p.setEstado("ACTIVO");
 
         if (prestamoDAO.guardar(p)) {
-            libroDAO.actualizarEstadoDisponible(libro.getId(), false);
-
-            mostrarAlerta("Éxito", "Préstamo registrado correctamente.", Alert.AlertType.INFORMATION);
+            libroDAO.actualizarEstadoDisponible(l.getId(), false);
+            mostrarAlerta("Éxito", "Prestamo guardado", Alert.AlertType.INFORMATION);
             limpiarFormulario();
-            cargarCombos();
             cargarDatosTabla();
+            cargarCombos();
+        }
+    }
+
+    @FXML
+    private void actualizarPrestamo() {
+        Prestamo sel = tablaPrestamos.getSelectionModel().getSelectedItem();
+        if (sel == null) {
+            mostrarAlerta("Atención", "Selecciona un préstamo", Alert.AlertType.WARNING);
+            return;
+        }
+
+        sel.setIdUsuario(cmbUsuario.getValue().getId());
+        sel.setIdLibro(cmbLibro.getValue().getId());
+        sel.setFechaDevolucion(Date.valueOf(dpFechaDevolucion.getValue()));
+
+        if (prestamoDAO.actualizar(sel)) {
+            mostrarAlerta("Éxito", "Actualizado correctamente", Alert.AlertType.INFORMATION);
+            cargarDatosTabla();
+            limpiarFormulario();
         }
     }
 
     @FXML
     private void finalizarPrestamo() {
-        Prestamo seleccionado = tablaPrestamos.getSelectionModel().getSelectedItem();
+        Prestamo sel = tablaPrestamos.getSelectionModel().getSelectedItem();
+        if (sel == null || sel.getEstado().equals("DEVUELTO")) return;
 
-        if (seleccionado == null) {
-            mostrarAlerta("Atención", "Selecciona un préstamo de la tabla.", Alert.AlertType.WARNING);
-            return;
+        // LÓGICA DE MULTAS (STRATEGY)
+        LocalDate hoy = LocalDate.now();
+        LocalDate limite = sel.getFechaDevolucion().toLocalDate();
+        if (hoy.isAfter(limite)) {
+            long dias = ChronoUnit.DAYS.between(limite, hoy);
+            MultaStrategy strategy = new MultaBasicaStrategy();
+            double monto = strategy.calcularMulta((int) dias);
+            mostrarAlerta("MULTA", "Retraso: " + dias + " días. Pago: $" + monto, Alert.AlertType.WARNING);
         }
 
-        if (seleccionado.getEstado().equals("DEVUELTO")) {
-            mostrarAlerta("Información", "Este préstamo ya fue devuelto.", Alert.AlertType.INFORMATION);
-            return;
-        }
-
-        if (prestamoDAO.marcarComoDevuelto(seleccionado.getId())) {
-            // IMPORTANTE: Volver a poner el libro como disponible
-            libroDAO.actualizarEstadoDisponible(seleccionado.getIdLibro(), true);
-
-            mostrarAlerta("Éxito", "Libro devuelto correctamente.", Alert.AlertType.INFORMATION);
-            cargarCombos();
+        if (prestamoDAO.marcarComoDevuelto(sel.getId())) {
+            libroDAO.actualizarEstadoDisponible(sel.getIdLibro(), true);
+            mostrarAlerta("Éxito", "Libro devuelto", Alert.AlertType.INFORMATION);
             cargarDatosTabla();
+            cargarCombos();
+            limpiarFormulario();
+        }
+    }
+
+    @FXML
+    private void eliminarPrestamo() {
+        Prestamo sel = tablaPrestamos.getSelectionModel().getSelectedItem();
+        if (sel == null) return;
+
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION, "¿Eliminar este registro de préstamo?");
+        if (confirm.showAndWait().get() == ButtonType.OK) {
+            if (prestamoDAO.eliminar(sel.getId())) {
+                cargarDatosTabla();
+                limpiarFormulario();
+            }
         }
     }
 
@@ -128,13 +175,17 @@ public class PrestamosController {
         cmbUsuario.getSelectionModel().clearSelection();
         cmbLibro.getSelectionModel().clearSelection();
         dpFechaDevolucion.setValue(null);
+        tablaPrestamos.getSelectionModel().clearSelection();
     }
 
-    private void mostrarAlerta(String titulo, String contenido, Alert.AlertType tipo) {
-        Alert alert = new Alert(tipo);
-        alert.setTitle(titulo);
-        alert.setHeaderText(null);
-        alert.setContentText(contenido);
-        alert.showAndWait();
+    private void cargarCombos() {
+        cmbUsuario.setItems(FXCollections.observableArrayList(usuarioDAO.listar()));
+        ObservableList<Libro> disp = FXCollections.observableArrayList();
+        for (Libro l : libroDAO.listar()) if (l.isDisponible()) disp.add(l);
+        cmbLibro.setItems(disp);
+    }
+
+    private void mostrarAlerta(String t, String c, Alert.AlertType ti) {
+        Alert a = new Alert(ti); a.setTitle(t); a.setHeaderText(null); a.setContentText(c); a.showAndWait();
     }
 }
