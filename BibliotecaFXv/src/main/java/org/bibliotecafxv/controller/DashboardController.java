@@ -93,12 +93,13 @@ public class DashboardController {
 
     @FXML
     private void abrirDashboard() {
-        // Restauramos el contenido central del Dashboard original
         rootPane.setCenter(contentPane);
-
-        // Volvemos a mostrar el panel derecho (Calendario y Gráfica)
         panelDerecho.setVisible(true);
         panelDerecho.setManaged(true);
+        cargarEstadisticas();
+        cargarDatosTabla();
+        cargarLibrosDestacados();
+        crearCalendario();
     }
 
     @FXML

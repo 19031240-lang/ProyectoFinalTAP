@@ -85,4 +85,8 @@ public class Libro {
     public void setPortada(String portada) {
         this.portada = portada;
     }
+    @Override
+    public String toString() {
+        return titulo;
+    }
 }

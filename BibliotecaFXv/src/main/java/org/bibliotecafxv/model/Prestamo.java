@@ -1,101 +1,51 @@
 package org.bibliotecafxv.model;
 
-import java.time.LocalDate;
+import java.sql.Date;
 
 public class Prestamo {
 
     private int id;
-    private int usuarioId;
-    private int libroId;
-
-    private LocalDate fechaPrestamo;
-    private LocalDate fechaDevolucion;
-
+    private int idUsuario;
+    private int idLibro;
+    private Date fechaPrestamo;
+    private Date fechaDevolucion;
     private String estado;
     private String nombreUsuario;
     private String tituloLibro;
 
-    public Prestamo() {
-    }
+    public Prestamo() {}
 
-    public Prestamo(int id,
-                    int usuarioId,
-                    int libroId,
-                    LocalDate fechaPrestamo,
-                    LocalDate fechaDevolucion,
-                    String estado) {
-
+    public Prestamo(int id, int idUsuario, int idLibro, Date fechaPrestamo, Date fechaDevolucion, String estado) {
         this.id = id;
-        this.usuarioId = usuarioId;
-        this.libroId = libroId;
+        this.idUsuario = idUsuario;
+        this.idLibro = idLibro;
         this.fechaPrestamo = fechaPrestamo;
         this.fechaDevolucion = fechaDevolucion;
         this.estado = estado;
     }
 
-    // --- GETTERS ORIGINALES ---
-    public int getId() {
-        return id;
-    }
+    // Getters y Setters
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
 
-    public int getUsuarioId() {
-        return usuarioId;
-    }
+    public int getIdUsuario() { return idUsuario; }
+    public void setIdUsuario(int idUsuario) { this.idUsuario = idUsuario; }
 
-    public int getLibroId() {
-        return libroId;
-    }
+    public int getIdLibro() { return idLibro; }
+    public void setIdLibro(int idLibro) { this.idLibro = idLibro; }
 
-    public LocalDate getFechaPrestamo() {
-        return fechaPrestamo;
-    }
+    public Date getFechaPrestamo() { return fechaPrestamo; }
+    public void setFechaPrestamo(Date fechaPrestamo) { this.fechaPrestamo = fechaPrestamo; }
 
-    public LocalDate getFechaDevolucion() {
-        return fechaDevolucion;
-    }
+    public Date getFechaDevolucion() { return fechaDevolucion; }
+    public void setFechaDevolucion(Date fechaDevolucion) { this.fechaDevolucion = fechaDevolucion; }
 
-    public String getEstado() {
-        return estado;
-    }
+    public String getEstado() { return estado; }
+    public void setEstado(String estado) { this.estado = estado; }
 
-    // --- SETTERS ORIGINALES ---
-    public void setId(int id) {
-        this.id = id;
-    }
+    public String getNombreUsuario() { return nombreUsuario; }
+    public void setNombreUsuario(String nombreUsuario) { this.nombreUsuario = nombreUsuario; }
 
-    public void setUsuarioId(int usuarioId) {
-        this.usuarioId = usuarioId;
-    }
-
-    public void setLibroId(int libroId) {
-        this.libroId = libroId;
-    }
-
-    public void setFechaPrestamo(LocalDate fechaPrestamo) {
-        this.fechaPrestamo = fechaPrestamo;
-    }
-
-    public void setFechaDevolucion(LocalDate fechaDevolucion) {
-        this.fechaDevolucion = fechaDevolucion;
-    }
-
-    public void setEstado(String estado) {
-        this.estado = estado;
-    }
-
-    public String getNombreUsuario() {
-        return nombreUsuario;
-    }
-
-    public void setNombreUsuario(String nombreUsuario) {
-        this.nombreUsuario = nombreUsuario;
-    }
-
-    public String getTituloLibro() {
-        return tituloLibro;
-    }
-
-    public void setTituloLibro(String tituloLibro) {
-        this.tituloLibro = tituloLibro;
-    }
+    public String getTituloLibro() { return tituloLibro; }
+    public void setTituloLibro(String tituloLibro) { this.tituloLibro = tituloLibro; }
 }

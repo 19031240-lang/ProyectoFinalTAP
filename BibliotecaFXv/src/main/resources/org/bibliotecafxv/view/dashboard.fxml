@@ -92,7 +92,6 @@
                     <yAxis><NumberAxis side="LEFT"/></yAxis>
                 </BarChart>
             </VBox>
-bag
         </VBox>
     </right>
 

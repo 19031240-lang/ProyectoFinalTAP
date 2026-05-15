@@ -240,4 +240,13 @@ public class LibroDAO implements GenericDAO<Libro> {
         }
         return total;
     }
+    public void actualizarEstadoDisponible(int idLibro, boolean disponible) {
+        String sql = "UPDATE libros SET disponible = ? WHERE id = ?";
+        try (Connection con = ConexionBD.getInstancia().getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setBoolean(1, disponible);
+            ps.setInt(2, idLibro);
+            ps.executeUpdate();
+        } catch (Exception e) { e.printStackTrace(); }
+    }
 }
