@@ -131,9 +131,7 @@ public class DashboardController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(ruta));
             Parent vista = loader.load();
-            rootPane.setCenter(vista); // Cambia solo el centro
-
-            // Ocultamos el panel derecho para que la nueva vista ocupe todo el espacio
+            rootPane.setCenter(vista);
             panelDerecho.setVisible(false);
             panelDerecho.setManaged(false);
 
@@ -244,5 +242,29 @@ public class DashboardController {
         }
 
         contenedorCalendario.getChildren().addAll(lblMes, grid);
+    }
+
+    @FXML
+    private void cerrarSesion(javafx.event.ActionEvent event) {
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/org/bibliotecafxv/view/login.fxml"));
+            javafx.scene.Parent root = loader.load();
+
+            javafx.stage.Stage stage = (javafx.stage.Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
+            javafx.scene.Scene scene = new javafx.scene.Scene(root);
+            stage.setScene(scene);
+
+            stage.setMaximized(true);
+            stage.centerOnScreen();
+            stage.show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("No se pudo cargar la pantalla de inicio de sesión.");
+            alert.showAndWait();
+        }
     }
 }

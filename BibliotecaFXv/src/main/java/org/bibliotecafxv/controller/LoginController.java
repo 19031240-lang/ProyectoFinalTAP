@@ -39,6 +39,9 @@ public class LoginController {
                 Stage stage = (Stage) txtCorreo.getScene().getWindow();
                 stage.getScene().setRoot(root);
 
+                // Aseguramos que el Dashboard se quede maximizado
+                stage.setMaximized(true);
+
             } else {
                 lblMensaje.setText("Contraseña incorrecta ");
             }
@@ -57,6 +60,9 @@ public class LoginController {
 
             Stage stage = (Stage) txtCorreo.getScene().getWindow();
             stage.setScene(new Scene(loader.load()));
+
+            // ¡Evitamos que se haga chiquita al ir a crear cuenta!
+            stage.setMaximized(true);
 
         } catch (Exception e) {
             e.printStackTrace();

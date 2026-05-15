@@ -49,6 +49,8 @@ public class RegistroController {
             Stage stage = (Stage)  txtCorreo.getScene().getWindow();
             stage.setScene(new Scene(loader.load()));
 
+            stage.setMaximized(true);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
