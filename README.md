@@ -46,7 +46,7 @@ Este proyecto fue estructurado siguiendo las mejores prácticas de la Ingenierí
 
 1. **Clonar el repositorio:**
    ```bash
-   git clone [https://github.com/19031240-lang/ProyectoFinalTAP.git](https://github.com/19031240-lang/ProyectoFinalTAP.git)
+   git clone https://github.com/19031240-lang/ProyectoFinalTAP.git
 
 2. **Configuración de la Base de Datos:**
 
@@ -61,6 +61,7 @@ Este proyecto fue estructurado siguiendo las mejores prácticas de la Ingenierí
 ---
 
 **Capturas de Pantalla**
+
 Menú Principal / Catálogo
 <img width="1912" height="1023" alt="Captura de pantalla 2026-05-15 182503" src="https://github.com/user-attachments/assets/1f30284b-c741-4f61-a1c0-bc5784a7aa4b" />
 
