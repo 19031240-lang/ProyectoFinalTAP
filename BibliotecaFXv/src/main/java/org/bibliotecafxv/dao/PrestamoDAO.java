@@ -7,7 +7,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PrestamoDAO {
+public class PrestamoDAO implements GenericDAO<Prestamo>{
     public List<Prestamo> listar() {
         List<Prestamo> lista = new ArrayList<>();
         String sql = "SELECT p.*, u.nombre AS nombreUsuario, l.titulo AS tituloLibro " +
@@ -55,7 +55,6 @@ public class PrestamoDAO {
             return false;
         }
     }
-// ... (mismos imports de antes)
 
     public boolean eliminar(int id) {
         String sql = "DELETE FROM prestamos WHERE id = ?";
@@ -95,8 +94,6 @@ public class PrestamoDAO {
             return false;
         }
     }
-
-    // --- MÉTODOS ESPECIALES PARA QUE EL DASHBOARD FUNCIONE ---
 
     public int contarPrestamosActivos() {
         String sql = "SELECT COUNT(*) FROM prestamos WHERE estado = 'ACTIVO'";

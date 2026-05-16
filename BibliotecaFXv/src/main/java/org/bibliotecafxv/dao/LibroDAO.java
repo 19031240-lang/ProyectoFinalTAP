@@ -10,7 +10,7 @@ import java.util.List;
 public class LibroDAO implements GenericDAO<Libro> {
 
     @Override
-    public void guardar(Libro libro) {
+    public boolean guardar(Libro libro) {
         String sql = """
                 INSERT INTO libros
                 (titulo, autor, categoria, disponible, descripcion, portada)
@@ -33,10 +33,12 @@ public class LibroDAO implements GenericDAO<Libro> {
 
             int filasAfectadas = ps.executeUpdate();
             System.out.println("Libro guardado exitosamente. Filas afectadas: " + filasAfectadas);
+            return filasAfectadas > 0;
 
         } catch (SQLException e) {
             System.out.println("Error al guardar el libro");
             e.printStackTrace();
+            return false;
         } finally {
             cerrarRecursos(null, ps, null);
         }
@@ -80,7 +82,7 @@ public class LibroDAO implements GenericDAO<Libro> {
     }
 
     @Override
-    public void actualizar(Libro libro) {
+    public boolean actualizar(Libro libro) {
         String sql = """
                 UPDATE libros
                 SET titulo=?,
@@ -109,17 +111,19 @@ public class LibroDAO implements GenericDAO<Libro> {
 
             int filasAfectadas = ps.executeUpdate();
             System.out.println("Libro actualizado. Filas afectadas: " + filasAfectadas);
+            return filasAfectadas > 0;
 
         } catch (SQLException e) {
             System.out.println("Error al actualizar el libro");
             e.printStackTrace();
+            return false;
         } finally {
             cerrarRecursos(null, ps, null);
         }
     }
 
     @Override
-    public void eliminar(int id) {
+    public boolean eliminar(int id) {
         String sql = "DELETE FROM libros WHERE id=?";
 
         Connection conn = null;
@@ -132,10 +136,12 @@ public class LibroDAO implements GenericDAO<Libro> {
 
             int filasAfectadas = ps.executeUpdate();
             System.out.println("Libro eliminado. Filas afectadas: " + filasAfectadas);
+            return filasAfectadas > 0;
 
         } catch (SQLException e) {
             System.out.println("Error al eliminar el libro");
             e.printStackTrace();
+            return false;
         } finally {
             cerrarRecursos(null, ps, null);
         }
@@ -223,6 +229,7 @@ public class LibroDAO implements GenericDAO<Libro> {
             e.printStackTrace();
         }
     }
+
     public int contarTotalLibros() {
         String sql = "SELECT COUNT(*) AS total FROM libros";
         int total = 0;
@@ -240,6 +247,7 @@ public class LibroDAO implements GenericDAO<Libro> {
         }
         return total;
     }
+
     public void actualizarEstadoDisponible(int idLibro, boolean disponible) {
         String sql = "UPDATE libros SET disponible = ? WHERE id = ?";
         try (Connection con = ConexionBD.getInstancia().getConexion();

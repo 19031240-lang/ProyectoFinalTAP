@@ -5,6 +5,7 @@ import javafx.scene.control.*;
 import org.bibliotecafxv.dao.UsuarioDAO;
 import org.bibliotecafxv.model.Usuario;
 import org.bibliotecafxv.util.HashUtil;
+import org.bibliotecafxv.factory.UsuarioFactory;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -28,12 +29,14 @@ public class RegistroController {
 
         String hash = HashUtil.sha1(txtPassword.getText());
 
-        Usuario u = new Usuario(0,
+        // ---  Patron Factory ---
+        Usuario u = UsuarioFactory.crearUsuario(
+                "USER",
                 txtNombre.getText(),
                 txtCorreo.getText(),
-                hash,
-                "USER"
+                hash
         );
+
         dao.guardar(u);
 
         lblMensaje.setText("Usuario registrado");
@@ -48,7 +51,6 @@ public class RegistroController {
 
             Stage stage = (Stage)  txtCorreo.getScene().getWindow();
             stage.setScene(new Scene(loader.load()));
-
             stage.setMaximized(true);
 
         } catch (Exception e) {

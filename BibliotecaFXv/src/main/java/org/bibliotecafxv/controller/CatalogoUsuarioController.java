@@ -17,6 +17,8 @@ import org.bibliotecafxv.dao.PrestamoDAO;
 import org.bibliotecafxv.model.Libro;
 import org.bibliotecafxv.model.Prestamo;
 import org.bibliotecafxv.model.Usuario;
+import org.bibliotecafxv.observer.PrestamoNotifier;
+import org.bibliotecafxv.observer.AdminObserver;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -37,7 +39,8 @@ public class CatalogoUsuarioController {
     private Libro libroSeleccionado;
     private Usuario usuarioLogueado;
 
-    // Este método recibe al usuario desde el LoginController
+    private PrestamoNotifier notificador;
+
     public void setUsuarioLogueado(Usuario usuario) {
         this.usuarioLogueado = usuario;
     }
@@ -46,7 +49,12 @@ public class CatalogoUsuarioController {
     public void initialize() {
         libroDAO = new LibroDAO();
         prestamoDAO = new PrestamoDAO();
-        panelDetalles.setVisible(false); // Ocultamos el panel hasta que seleccione algo
+
+        // --- PATRÓN OBSERVER ---
+        notificador = new PrestamoNotifier();
+        notificador.agregarObserver(new AdminObserver());
+
+        panelDetalles.setVisible(false);
         cargarCatalogo();
     }
 
@@ -116,14 +124,13 @@ public class CatalogoUsuarioController {
             }
         } catch (Exception e) {}
 
-        // Validamos el botón dependiendo de la disponibilidad
         if (libro.isDisponible()) {
             lblEstadoSms.setText("¡Este libro está disponible!");
-            lblEstadoSms.setStyle("-fx-text-fill: #27ae60;"); // Verde
+            lblEstadoSms.setStyle("-fx-text-fill: #27ae60;");
             btnSolicitar.setDisable(false);
         } else {
             lblEstadoSms.setText("Actualmente prestado");
-            lblEstadoSms.setStyle("-fx-text-fill: #e74c3c;"); // Rojo
+            lblEstadoSms.setStyle("-fx-text-fill: #e74c3c;");
             btnSolicitar.setDisable(true);
         }
     }
@@ -133,11 +140,10 @@ public class CatalogoUsuarioController {
         if (libroSeleccionado == null || usuarioLogueado == null) return;
 
         try {
-            // 1. Calculamos las fechas (Hoy y dentro de 7 días)
+
             LocalDate hoy = LocalDate.now();
             LocalDate limite = hoy.plusDays(7);
 
-            // 2. Creamos el registro del préstamo
             Prestamo nuevoPrestamo = new Prestamo(
                     0,
                     usuarioLogueado.getId(),
@@ -147,18 +153,19 @@ public class CatalogoUsuarioController {
                     "ACTIVO"
             );
 
-            // 3. Lo guardamos en la base de datos
             prestamoDAO.guardar(nuevoPrestamo);
 
-            // 4. Actualizamos el libro para que ya no esté disponible
+            // --- PATRÓN OBSERVER ---
+            String mensaje = "El usuario ID " + usuarioLogueado.getId() +
+                    " acaba de solicitar el libro: '" + libroSeleccionado.getTitulo() + "'";
+            notificador.notificar(mensaje);
+
             libroSeleccionado.setDisponible(false);
             libroDAO.actualizar(libroSeleccionado);
 
-            // 5. Ocultamos el panel derecho y recargamos las tarjetitas
             panelDetalles.setVisible(false);
             cargarCatalogo();
 
-            // 6. Le avisamos al usuario
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Préstamo Exitoso");
             alert.setHeaderText("¡Disfruta tu lectura!");

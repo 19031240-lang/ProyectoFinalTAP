@@ -10,7 +10,7 @@ import java.util.List;
 public class MultaDAO implements GenericDAO<Multa> {
 
     @Override
-    public void guardar(Multa multa) {
+    public boolean guardar(Multa multa) {
         String sql = "INSERT INTO multas(prestamo_id, monto, pagada) VALUES(?,?,?)";
 
         Connection conn = null;
@@ -26,10 +26,12 @@ public class MultaDAO implements GenericDAO<Multa> {
 
             int filasAfectadas = ps.executeUpdate();
             System.out.println("Multa registrada exitosamente. Filas afectadas: " + filasAfectadas);
+            return filasAfectadas > 0;
 
         } catch (SQLException e) {
             System.out.println("Error al guardar multa");
             e.printStackTrace();
+            return false;
         } finally {
             cerrarRecursos(null, ps);
         }
@@ -69,7 +71,7 @@ public class MultaDAO implements GenericDAO<Multa> {
     }
 
     @Override
-    public void actualizar(Multa multa) {
+    public boolean actualizar(Multa multa) {
         String sql = "UPDATE multas SET prestamo_id=?, monto=?, pagada=? WHERE id=?";
 
         Connection conn = null;
@@ -86,17 +88,19 @@ public class MultaDAO implements GenericDAO<Multa> {
 
             int filasAfectadas = ps.executeUpdate();
             System.out.println("Multa actualizada. Filas afectadas: " + filasAfectadas);
+            return filasAfectadas > 0;
 
         } catch (SQLException e) {
             System.out.println("Error al actualizar multa");
             e.printStackTrace();
+            return false;
         } finally {
             cerrarRecursos(null, ps);
         }
     }
 
     @Override
-    public void eliminar(int id) {
+    public boolean eliminar(int id) {
         String sql = "DELETE FROM multas WHERE id=?";
 
         Connection conn = null;
@@ -109,10 +113,12 @@ public class MultaDAO implements GenericDAO<Multa> {
 
             int filasAfectadas = ps.executeUpdate();
             System.out.println("Multa eliminada. Filas afectadas: " + filasAfectadas);
+            return filasAfectadas > 0;
 
         } catch (SQLException e) {
             System.out.println("Error al eliminar multa");
             e.printStackTrace();
+            return false;
         } finally {
             cerrarRecursos(null, ps);
         }
