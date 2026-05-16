@@ -60,11 +60,11 @@ Este proyecto fue estructurado siguiendo las mejores prácticas de la Ingenierí
 
 ---
 
-**Capturas de Pantalla**
+## Capturas de Pantalla
 
-Menú Principal / Catálogo
+* **Menú Principal / Catálogo**
 <img width="1912" height="1023" alt="Captura de pantalla 2026-05-15 182503" src="https://github.com/user-attachments/assets/1f30284b-c741-4f61-a1c0-bc5784a7aa4b" />
 
-Dashboard Administrador
+* **Dashboard Administrador**
 
 <img width="1919" height="1019" alt="Captura de pantalla 2026-05-15 182358" src="https://github.com/user-attachments/assets/77a0295c-287d-4cef-91ca-c81a1993a696" />
