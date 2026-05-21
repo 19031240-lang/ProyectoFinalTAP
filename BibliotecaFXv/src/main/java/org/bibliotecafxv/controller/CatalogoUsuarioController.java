@@ -17,12 +17,16 @@ import org.bibliotecafxv.dao.PrestamoDAO;
 import org.bibliotecafxv.model.Libro;
 import org.bibliotecafxv.model.Prestamo;
 import org.bibliotecafxv.model.Usuario;
-import org.bibliotecafxv.observer.PrestamoNotifier;
-import org.bibliotecafxv.observer.AdminObserver;
 
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Controlador de la interfaz gráfica para el Catálogo Público que visualizan los usuarios finales.
+ * Construye de forma dinámica tarjetas visuales para los libros, despliega paneles informativos detallados
+ * y procesa las solicitudes de préstamos.
+ * (Nota: Las notificaciones del patrón Observer se delegan automáticamente a la capa DAO).
+ */
 public class CatalogoUsuarioController {
 
     @FXML private FlowPane contenedorLibros;
@@ -31,6 +35,7 @@ public class CatalogoUsuarioController {
     @FXML private Label lblTituloDetalle;
     @FXML private Label lblAutorDetalle;
     @FXML private Label lblCategoriaDetalle;
+    @FXML private Label lblDescripcionDetalle;
     @FXML private Label lblEstadoSms;
     @FXML private Button btnSolicitar;
 
@@ -39,25 +44,29 @@ public class CatalogoUsuarioController {
     private Libro libroSeleccionado;
     private Usuario usuarioLogueado;
 
-    private PrestamoNotifier notificador;
-
+    /**
+     * Inyecta externamente la información del usuario que ha iniciado sesión en el sistema.
+     * @param usuario Instancia del usuario autenticado.
+     */
     public void setUsuarioLogueado(Usuario usuario) {
         this.usuarioLogueado = usuario;
     }
 
+    /**
+     * Inicializa los componentes y oculta el panel lateral de detalles antes de renderizar los libros.
+     */
     @FXML
     public void initialize() {
         libroDAO = new LibroDAO();
         prestamoDAO = new PrestamoDAO();
 
-        // --- PATRÓN OBSERVER ---
-        notificador = new PrestamoNotifier();
-        notificador.agregarObserver(new AdminObserver());
-
         panelDetalles.setVisible(false);
         cargarCatalogo();
     }
 
+    /**
+     * Consulta la colección total de libros y genera de forma iterativa las tarjetas visuales dentro del FlowPane.
+     */
     private void cargarCatalogo() {
         contenedorLibros.getChildren().clear();
         List<Libro> libros = libroDAO.listar();
@@ -68,12 +77,18 @@ public class CatalogoUsuarioController {
         }
     }
 
+    /**
+     * Construye de manera dinámica el componente visual (Card) para representar a un libro.
+     * Agrega estilos CSS personalizados, formatea la imagen con bordes redondeados y asigna los eventos del ratón.
+     * @param libro Datos del libro a maquetar.
+     * @return Contenedor VBox estructurado con el diseño de la tarjeta.
+     */
     private VBox crearCardLibro(Libro libro) {
         VBox card = new VBox(10);
         card.getStyleClass().add("book-card");
         card.setPrefWidth(160);
 
-        // --- Evento Click en la tarjeta ---
+        // Evento que desencadena la visualización detallada lateral al hacer clic
         card.setOnMouseClicked(event -> mostrarDetalles(libro));
 
         ImageView imageView = new ImageView();
@@ -108,6 +123,11 @@ public class CatalogoUsuarioController {
         return card;
     }
 
+    /**
+     * Hace visible el panel lateral y vuelca toda la información descriptiva y portadas del libro seleccionado.
+     * Habilita o deshabilita los controles de adquisición según la disponibilidad física del ejemplar.
+     * @param libro Objeto libro seleccionado de la cuadrícula.
+     */
     private void mostrarDetalles(Libro libro) {
         this.libroSeleccionado = libro;
         panelDetalles.setVisible(true);
@@ -115,6 +135,12 @@ public class CatalogoUsuarioController {
         lblTituloDetalle.setText(libro.getTitulo());
         lblAutorDetalle.setText("Autor: " + libro.getAutor());
         lblCategoriaDetalle.setText("Categoría: " + libro.getCategoria());
+
+        if (libro.getDescripcion() != null && !libro.getDescripcion().trim().isEmpty()) {
+            lblDescripcionDetalle.setText(libro.getDescripcion());
+        } else {
+            lblDescripcionDetalle.setText("No hay una sinopsis disponible para este libro.");
+        }
 
         try {
             if (libro.getPortada() != null && !libro.getPortada().isEmpty()) {
@@ -135,12 +161,16 @@ public class CatalogoUsuarioController {
         }
     }
 
+    /**
+     * Genera la transacción de un nuevo préstamo con una vigencia estándar de 7 días naturales.
+     * Modifica el estado de disponibilidad del ejemplar en la BD y delega la ejecución del
+     * Patrón Observer internamente a la clase PrestamoDAO.
+     */
     @FXML
     private void solicitarPrestamo() {
         if (libroSeleccionado == null || usuarioLogueado == null) return;
 
         try {
-
             LocalDate hoy = LocalDate.now();
             LocalDate limite = hoy.plusDays(7);
 
@@ -155,11 +185,7 @@ public class CatalogoUsuarioController {
 
             prestamoDAO.guardar(nuevoPrestamo);
 
-            // --- PATRÓN OBSERVER ---
-            String mensaje = "El usuario ID " + usuarioLogueado.getId() +
-                    " acaba de solicitar el libro: '" + libroSeleccionado.getTitulo() + "'";
-            notificador.notificar(mensaje);
-
+            // Sincronización del stock y estado del libro
             libroSeleccionado.setDisponible(false);
             libroDAO.actualizar(libroSeleccionado);
 
@@ -181,6 +207,10 @@ public class CatalogoUsuarioController {
         }
     }
 
+    /**
+     * Cierra el espacio de trabajo del catálogo y regresa la aplicación a la pantalla de Login.
+     * @param event Acción disparada por el botón correspondiente.
+     */
     @FXML
     private void cerrarSesion(javafx.event.ActionEvent event) {
         try {

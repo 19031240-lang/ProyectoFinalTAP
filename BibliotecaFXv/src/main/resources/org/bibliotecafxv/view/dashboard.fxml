@@ -16,9 +16,11 @@
             <Label text="📚 Biblioteca Digital" styleClass="logo-title"/>
             <Button text="🏠 Dashboard"  styleClass="menu-button, menu-button-active" onAction="#abrirDashboard"/>
             <Button text="📘 Libros"     styleClass="menu-button" onAction="#abrirLibros"/>
+            <Button text="🖊️ Autores"    styleClass="menu-button" onAction="#abrirAutores"/>
+            <Button text="🔖 Categorías" styleClass="menu-button" onAction="#abrirCategorias"/>
             <Button text="👤 Usuarios"   styleClass="menu-button" onAction="#abrirUsuarios"/>
             <Button text="🔄 Préstamos"  styleClass="menu-button" onAction="#abrirPrestamos"/>
-            <Button text="📊 Reportes"   styleClass="menu-button" onAction="#abrirReportes"/>
+            <Button text="📎 Reportes"   styleClass="menu-button" onAction="#abrirReportes"/>
 
             <Region VBox.vgrow="ALWAYS" />
 
@@ -32,13 +34,11 @@
                 <Insets top="20" right="20" bottom="20" left="20"/>
             </padding>
 
-            <!-- Topbar SIN buscador, solo notificación y usuario -->
             <HBox styleClass="topbar" alignment="CENTER_RIGHT" spacing="10">
                 <Label text="🔔" styleClass="icon-bell"/>
                 <Label text="Administrador" styleClass="admin-label"/>
             </HBox>
 
-            <!-- Tarjetas de estadísticas -->
             <HBox spacing="20">
                 <VBox styleClass="card" prefWidth="220">
                     <Label text="Total libros"  styleClass="card-title"/>

@@ -24,6 +24,11 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Controlador de interoperabilidad para la generación y extracción de datos del sistema.
+ * Utiliza iText para la creación de reportes PDF tabulares y GSON para la serialización de datos
+ * hacia formatos estandarizados (JSON/CSV), haciendo uso del **Patrón Strategy** para las auditorías de morosidad.
+ */
 public class ReportesController {
 
     private LibroDAO libroDAO;
@@ -36,6 +41,10 @@ public class ReportesController {
     }
 
     // --- SECCIÓN DE PDF ---
+
+    /**
+     * Extrae un subconjunto de préstamos vencidos e invoca el constructor de PDF.
+     */
     @FXML
     private void generarPdfMorosos() {
         List<Prestamo> morosos = prestamoDAO.listar().stream()
@@ -53,6 +62,9 @@ public class ReportesController {
         }
     }
 
+    /**
+     * Extrae el subconjunto de préstamos vigentes e invoca el constructor de PDF.
+     */
     @FXML
     private void generarPdfPrestamos() {
         List<Prestamo> activos = prestamoDAO.listar().stream()
@@ -69,7 +81,11 @@ public class ReportesController {
             crearDocumentoPdfPrestamos(archivo, activos);
         }
     }
-    // --- CREADOR DE PDF PARA MOROSOS (CON MULTAS Y DÍAS) ---
+
+    /**
+     * Dibuja un reporte PDF aplicando lógicas de negocio dinámicas (Strategy) para el cobro
+     * de multas calculando la distancia temporal entre fechas.
+     */
     private void crearDocumentoPdfMorosos(File archivo, List<Prestamo> lista) {
         Document documento = new Document();
         try {
@@ -108,11 +124,12 @@ public class ReportesController {
                 LocalDate fechaLimite = p.getFechaDevolucion().toLocalDate();
                 long diasRetraso = ChronoUnit.DAYS.between(fechaLimite, hoy);
 
+                // Alternancia dinámica del Strategy según gravedad del retraso
                 MultaStrategy estrategia;
                 if (diasRetraso <= 7) {
-                    estrategia = new MultaBasicaStrategy(); // 1 a 7 días cobra básico
+                    estrategia = new MultaBasicaStrategy();
                 } else {
-                    estrategia = new MultaPremiumStrategy(); // Más de 7 días cobra premium
+                    estrategia = new MultaPremiumStrategy();
                 }
 
                 double multa = estrategia.calcularMulta((int) diasRetraso);
@@ -130,7 +147,6 @@ public class ReportesController {
         }
     }
 
-    // --- CREADOR DE PDF PARA PRÉSTAMOS NORMALES (SIN MULTAS) ---
     private void crearDocumentoPdfPrestamos(File archivo, List<Prestamo> lista) {
         Document documento = new Document();
         try {
@@ -172,13 +188,15 @@ public class ReportesController {
 
     // --- SECCIÓN DE EXPORTACIÓN (JSON Y CSV) ---
 
+    /**
+     * Serializa todo el catálogo de libros mediante Gson y lo guarda en un archivo de texto JSON.
+     */
     @FXML
     private void exportarCatalogoJson() {
         File archivo = seleccionarDestino("Exportar Catálogo JSON", "Catalogo.json", "*.json");
         if (archivo == null) return;
 
         List<Libro> libros = libroDAO.listar();
-        // Usamos Gson para convertir la lista de libros a formato JSON bonito
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
         try (Writer writer = new FileWriter(archivo)) {
@@ -189,6 +207,9 @@ public class ReportesController {
         }
     }
 
+    /**
+     * Escribe todo el catálogo de libros separando los atributos por comas, soportado por Excel.
+     */
     @FXML
     private void exportarCatalogoCsv() {
         File archivo = seleccionarDestino("Exportar Catálogo CSV", "Catalogo.csv", "*.csv");
@@ -197,10 +218,8 @@ public class ReportesController {
         List<Libro> libros = libroDAO.listar();
 
         try (FileWriter writer = new FileWriter(archivo)) {
-            // Escribimos la cabecera (nombres de columnas)
             writer.write("ID,Titulo,Autor,Categoria,Disponible\n");
 
-            // Escribimos los datos línea por línea
             for (Libro l : libros) {
                 writer.write(String.format("%d,\"%s\",\"%s\",\"%s\",%b\n",
                         l.getId(), l.getTitulo(), l.getAutor(), l.getCategoria(), l.isDisponible()));
@@ -211,7 +230,7 @@ public class ReportesController {
         }
     }
 
-    // --- HERRAMIENTAS UTILES ---
+
 
     private File seleccionarDestino(String titulo, String nombreDefault, String extension) {
         FileChooser fileChooser = new FileChooser();

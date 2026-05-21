@@ -9,6 +9,11 @@ import org.bibliotecafxv.dao.UsuarioDAO;
 import org.bibliotecafxv.model.Usuario;
 import org.bibliotecafxv.util.HashUtil;
 
+/**
+ * Controlador para la administración de cuentas y accesos al sistema.
+ * Gestiona el alta, baja y modificación de usuarios administradores y clientes regulares,
+ * integrando medidas de seguridad criptográfica (SHA-1) para el tratamiento de las contraseñas.
+ */
 public class UsuarioController {
 
     @FXML private TextField txtNombre;
@@ -28,9 +33,7 @@ public class UsuarioController {
 
     @FXML
     public void initialize() {
-
         usuarioDAO = new UsuarioDAO();
-
         cmbRol.getSelectionModel().select("USER");
 
         configurarTabla();
@@ -42,7 +45,6 @@ public class UsuarioController {
     }
 
     private void configurarTabla() {
-
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         colCorreo.setCellValueFactory(new PropertyValueFactory<>("correo"));
@@ -50,30 +52,27 @@ public class UsuarioController {
     }
 
     private void cargarDatos() {
-
         listaUsuarios = FXCollections.observableArrayList(usuarioDAO.listar());
         tablaUsuarios.setItems(listaUsuarios);
     }
 
+    /**
+     * Refleja los datos de la cuenta seleccionada en el formulario para edición.
+     * Deja el campo de contraseña en blanco por seguridad para forzar un reingreso manual.
+     */
     private void seleccionarUsuario(Usuario usuario) {
-
         if (usuario != null) {
-
             usuarioSeleccionado = usuario;
-
             txtNombre.setText(usuario.getNombre());
             txtCorreo.setText(usuario.getCorreo());
             txtPassword.clear();
             txtPassword.setPromptText("Dejar vacío para no cambiar");
-
             cmbRol.setValue(usuario.getRol());
         }
     }
 
     @FXML
     private void guardarUsuario() {
-
-        // Si hay un usuario seleccionado, avisa que use Actualizar
         if (usuarioSeleccionado != null) {
             mostrarAlerta(
                     "Atención",
@@ -98,50 +97,29 @@ public class UsuarioController {
         Usuario nuevoUsuario = new Usuario();
         nuevoUsuario.setNombre(txtNombre.getText());
         nuevoUsuario.setCorreo(txtCorreo.getText());
+
+        // Cifrado SHA-1 de la contraseña antes de mandarla al DAO
         nuevoUsuario.setPassword(HashUtil.sha1(txtPassword.getText()));
         nuevoUsuario.setRol(cmbRol.getValue());
 
         if (usuarioDAO.guardar(nuevoUsuario)) {
-
-            mostrarAlerta(
-                    "Éxito",
-                    "Usuario registrado correctamente.",
-                    Alert.AlertType.INFORMATION
-            );
-
+            mostrarAlerta("Éxito", "Usuario registrado correctamente.", Alert.AlertType.INFORMATION);
             limpiarFormulario();
             cargarDatos();
-
         } else {
-
-            mostrarAlerta(
-                    "Error",
-                    "No se pudo guardar el usuario.",
-                    Alert.AlertType.ERROR
-            );
+            mostrarAlerta("Error", "No se pudo guardar el usuario.", Alert.AlertType.ERROR);
         }
     }
 
     @FXML
     private void actualizarUsuario() {
-
         if (usuarioSeleccionado == null) {
-
-            mostrarAlerta(
-                    "Atención",
-                    "Selecciona un usuario de la tabla para actualizarlo.",
-                    Alert.AlertType.WARNING
-            );
+            mostrarAlerta("Atención", "Selecciona un usuario de la tabla para actualizarlo.", Alert.AlertType.WARNING);
             return;
         }
 
         if (txtNombre.getText().isEmpty() || txtCorreo.getText().isEmpty()) {
-
-            mostrarAlerta(
-                    "Error",
-                    "El nombre y el correo son obligatorios.",
-                    Alert.AlertType.ERROR
-            );
+            mostrarAlerta("Error", "El nombre y el correo son obligatorios.", Alert.AlertType.ERROR);
             return;
         }
 
@@ -149,6 +127,7 @@ public class UsuarioController {
         usuarioSeleccionado.setCorreo(txtCorreo.getText());
         usuarioSeleccionado.setRol(cmbRol.getValue());
 
+        // Solo se cifra y actualiza la contraseña si el campo no se dejó vacío
         if (!txtPassword.getText().isEmpty()) {
             usuarioSeleccionado.setPassword(HashUtil.sha1(txtPassword.getText()));
         } else {
@@ -156,59 +135,34 @@ public class UsuarioController {
         }
 
         if (usuarioDAO.actualizar(usuarioSeleccionado)) {
-
-            mostrarAlerta(
-                    "Éxito",
-                    "Usuario actualizado correctamente.",
-                    Alert.AlertType.INFORMATION
-            );
-
+            mostrarAlerta("Éxito", "Usuario actualizado correctamente.", Alert.AlertType.INFORMATION);
             cargarDatos();
             limpiarFormulario();
-
         } else {
-
-            mostrarAlerta(
-                    "Error",
-                    "No se pudo actualizar el usuario.",
-                    Alert.AlertType.ERROR
-            );
+            mostrarAlerta("Error", "No se pudo actualizar el usuario.", Alert.AlertType.ERROR);
         }
     }
 
+    /**
+     * Elimina el acceso del usuario, validando como medida de seguridad que
+     * el "Super Administrador" principal (ID = 1) no pueda ser borrado accidentalmente.
+     */
     @FXML
     private void eliminarUsuario() {
-
         Usuario seleccionado = tablaUsuarios.getSelectionModel().getSelectedItem();
 
         if (seleccionado == null) {
-
-            mostrarAlerta(
-                    "Atención",
-                    "Selecciona un usuario de la tabla.",
-                    Alert.AlertType.WARNING
-            );
+            mostrarAlerta("Atención", "Selecciona un usuario de la tabla.", Alert.AlertType.WARNING);
             return;
         }
 
         if (seleccionado.getId() == 1) {
-
-            mostrarAlerta(
-                    "Error",
-                    "No se puede eliminar al admin principal.",
-                    Alert.AlertType.ERROR
-            );
+            mostrarAlerta("Error", "No se puede eliminar al admin principal.", Alert.AlertType.ERROR);
             return;
         }
 
         if (usuarioDAO.eliminar(seleccionado.getId())) {
-
-            mostrarAlerta(
-                    "Éxito",
-                    "Usuario eliminado.",
-                    Alert.AlertType.INFORMATION
-            );
-
+            mostrarAlerta("Éxito", "Usuario eliminado.", Alert.AlertType.INFORMATION);
             cargarDatos();
             limpiarFormulario();
         }
@@ -216,27 +170,20 @@ public class UsuarioController {
 
     @FXML
     private void limpiarFormulario() {
-
         txtNombre.clear();
         txtCorreo.clear();
         txtPassword.clear();
         txtPassword.setPromptText("Nueva contraseña");
-
         cmbRol.getSelectionModel().select("USER");
-
         usuarioSeleccionado = null;
-
         tablaUsuarios.getSelectionModel().clearSelection();
     }
 
-    private void mostrarAlerta(String titulo,
-                               String contenido,
-                               Alert.AlertType tipo) {
-
-        Alert alert = new Alert(tipo);
-        alert.setTitle(titulo);
-        alert.setHeaderText(null);
-        alert.setContentText(contenido);
-        alert.showAndWait();
+    private void mostrarAlerta(String titulo, String contenido, Alert.AlertType tipo) {
+        Alert a = new Alert(tipo);
+        a.setTitle(titulo);
+        a.setHeaderText(null);
+        a.setContentText(contenido);
+        a.showAndWait();
     }
 }

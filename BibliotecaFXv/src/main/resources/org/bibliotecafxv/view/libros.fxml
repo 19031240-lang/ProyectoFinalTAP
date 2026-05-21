@@ -16,7 +16,6 @@
 
     <HBox spacing="20" VBox.vgrow="ALWAYS">
 
-        <!-- Panel izquierdo: formulario -->
         <VBox prefWidth="300" spacing="15" styleClass="card">
             <Label styleClass="section-title" text="Datos del Libro" />
 
@@ -27,12 +26,12 @@
 
             <VBox spacing="5">
                 <Label text="Autor:" />
-                <TextField fx:id="txtAutor" promptText="Ej. Gabriel García Márquez" styleClass="search-field" />
+                <ComboBox fx:id="cmbAutor" promptText="Seleccione un autor..." prefWidth="280" styleClass="search-field" />
             </VBox>
 
             <VBox spacing="5">
                 <Label text="Categoría:" />
-                <TextField fx:id="txtCategoria" promptText="Ej. Novela" styleClass="search-field" />
+                <ComboBox fx:id="cmbCategoria" promptText="Seleccione una categoría..." prefWidth="280" styleClass="search-field" />
             </VBox>
 
             <VBox spacing="5">
@@ -48,7 +47,6 @@
 
             <CheckBox fx:id="chkDisponible" text="Disponible" selected="true" />
 
-            <!-- Botones -->
             <HBox spacing="8" alignment="CENTER">
                 <Button text="Guardar"
                         styleClass="menu-button-active"
@@ -65,10 +63,8 @@
             </HBox>
         </VBox>
 
-        <!-- Panel derecho: tabla -->
         <VBox spacing="10" styleClass="card" HBox.hgrow="ALWAYS">
 
-            <!-- Barra de búsqueda -->
             <HBox spacing="10" alignment="CENTER_LEFT">
                 <Label styleClass="section-title" text="Lista de Libros" HBox.hgrow="ALWAYS"/>
                 <TextField fx:id="txtBuscar" promptText="Buscar libro..." styleClass="search-field" prefWidth="200"/>

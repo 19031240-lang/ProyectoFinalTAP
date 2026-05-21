@@ -19,20 +19,26 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.collections.FXCollections;
 
+/**
+ * Panel de Control (Dashboard) del Administrador principal de la biblioteca.
+ * Coordina el enrutamiento y la navegación modular de la aplicación sustituyendo las vistas centrales
+ * del BorderPane, procesa indicadores de rendimiento analíticos en tiempo real (KPIs),
+ * alimenta componentes analíticos gráficos (BarChart) y gestiona un calendario dinámico de devoluciones.
+ */
 public class DashboardController {
 
-    // Contenedores principales
+    // Contenedores estructurales principales
     @FXML private BorderPane rootPane;
     @FXML private VBox contentPane;
-    @FXML private VBox panelDerecho; // <-- NUEVA VARIABLE
+    @FXML private VBox panelDerecho;
 
-    // Tabla
+    // Historial transaccional rápido
     @FXML private TableView<org.bibliotecafxv.model.Prestamo> tablaPrestamos;
     @FXML private TableColumn<org.bibliotecafxv.model.Prestamo, String> colUsuario;
     @FXML private TableColumn<org.bibliotecafxv.model.Prestamo, String> colLibro;
     @FXML private TableColumn<org.bibliotecafxv.model.Prestamo, String> colFecha;
 
-    // Gráfica y otros
+    // Métricas analíticas visuales
     @FXML private BarChart<String, Number> graficaPrestamos;
     @FXML private Label lblTotalLibros;
     @FXML private Label lblTotalUsuarios;
@@ -44,6 +50,10 @@ public class DashboardController {
     private UsuarioDAO usuarioDAO;
     private PrestamoDAO prestamoDAO;
 
+    /**
+     * Construye las variables del backend, inicializa los widgets analíticos,
+     * dibuja el componente de calendario del mes en curso y formatea la gráfica de barras semanal.
+     */
     @FXML
     public void initialize() {
         libroDAO = new LibroDAO();
@@ -69,6 +79,9 @@ public class DashboardController {
         tablaPrestamos.setItems(FXCollections.observableArrayList(lista));
     }
 
+    /**
+     * Inicializa los datos fijos de rendimiento semanal para la analítica del gráfico de barras.
+     */
     private void configurarGrafica() {
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.getData().add(new XYChart.Data<>("Lun", 5));
@@ -80,6 +93,9 @@ public class DashboardController {
         graficaPrestamos.getData().add(series);
     }
 
+    /**
+     * Solicita recuentos analíticos globales a las distintas capas DAO para actualizar los paneles de KPIs.
+     */
     private void cargarEstadisticas() {
         int libros = libroDAO.contarTotalLibros();
         int usuarios = usuarioDAO.contarTotalUsuarios();
@@ -89,8 +105,11 @@ public class DashboardController {
         if (lblTotalPrestamos != null) lblTotalPrestamos.setText(String.valueOf(prestamos));
     }
 
-    // --- MÉTODOS DE NAVEGACIÓN ---
+    // --- MÉTODOS DE NAVEGACIÓN Y ENRUTAMIENTO ---
 
+    /**
+     * Vuelve a montar la vista predeterminada del panel analítico principal en el centro del escenario.
+     */
     @FXML
     private void abrirDashboard() {
         rootPane.setCenter(contentPane);
@@ -123,10 +142,20 @@ public class DashboardController {
     }
 
     @FXML
-    private void abrirReservas() {
-        cargarVista("/org/bibliotecafxv/view/reservas.fxml");
+    private void abrirAutores() {
+        cargarVista("/org/bibliotecafxv/view/autor.fxml");
     }
 
+    @FXML
+    private void abrirCategorias() {
+        cargarVista("/org/bibliotecafxv/view/categoria.fxml");
+    }
+
+    /**
+     * Carga dinámicamente archivos fxml externos e incrusta sus nodos raíz dentro de la
+     * sección central del BorderPane principal, logrando una SPA (Single Page Application).
+     * @param ruta Dirección del recurso FXML en los assets del proyecto.
+     */
     private void cargarVista(String ruta) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(ruta));
@@ -141,6 +170,9 @@ public class DashboardController {
         }
     }
 
+    /**
+     * Muestra visualmente las portadas y estados de las primeras 4 novedades literarias guardadas en la BD.
+     */
     private void cargarLibrosDestacados() {
         if (contenedorLibros != null) contenedorLibros.getChildren().clear();
 
@@ -193,6 +225,10 @@ public class DashboardController {
         return card;
     }
 
+    /**
+     * Calcula los desfases del mes actual y construye matricialmente un calendario funcional usando un GridPane.
+     * Consulta con el DAO los días específicos con retornos programados pendientes para resaltarlos visualmente.
+     */
     private void crearCalendario() {
         if (contenedorCalendario == null) return;
         contenedorCalendario.getChildren().clear();
@@ -228,6 +264,7 @@ public class DashboardController {
             javafx.scene.control.Label lblNum = new javafx.scene.control.Label(String.valueOf(dia));
             lblNum.getStyleClass().add("calendar-day");
 
+            // Resaltado visual basado en reglas del negocio analizadas en el DAO
             if (diasConDevolucion.contains(dia)) {
                 lblNum.getStyleClass().add("calendar-day-due");
             }
@@ -244,6 +281,10 @@ public class DashboardController {
         contenedorCalendario.getChildren().addAll(lblMes, grid);
     }
 
+    /**
+     * Invalida la sesión del Administrador y lo redirige al entorno seguro del Login inicializando el Stage.
+     * @param event Evento físico provocado al interactuar con el botón de desconexión.
+     */
     @FXML
     private void cerrarSesion(javafx.event.ActionEvent event) {
         try {

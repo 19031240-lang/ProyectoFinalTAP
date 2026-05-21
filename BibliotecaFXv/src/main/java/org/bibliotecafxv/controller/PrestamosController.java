@@ -12,6 +12,11 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
+/**
+ * Controlador que orquesta la lógica de negocio de los Préstamos y Devoluciones.
+ * Gestiona la sincronización del inventario de libros (disponibilidad), el histórico de
+ * transacciones y aplica penalizaciones económicas utilizando el **Patrón de Diseño Strategy**.
+ */
 public class PrestamosController {
 
     @FXML private ComboBox<Usuario> cmbUsuario;
@@ -42,6 +47,7 @@ public class PrestamosController {
         cargarCombos();
         cargarDatosTabla();
 
+        // Filtro de búsqueda reactivo acoplado a la propiedad de texto
         txtBuscar.textProperty().addListener((obs, oldVal, newVal) -> filtrar(newVal));
 
         tablaPrestamos.getSelectionModel().selectedItemProperty().addListener((obs, oldS, newS) -> {
@@ -88,6 +94,10 @@ public class PrestamosController {
         dpFechaDevolucion.setValue(p.getFechaDevolucion().toLocalDate());
     }
 
+    /**
+     * Registra un nuevo contrato de préstamo en la base de datos.
+     * Automáticamente localiza el libro prestado y actualiza su estado a "No Disponible".
+     */
     @FXML
     private void registrarPrestamo() {
         Usuario u = cmbUsuario.getValue();
@@ -105,7 +115,9 @@ public class PrestamosController {
         p.setEstado("ACTIVO");
 
         if (prestamoDAO.guardar(p)) {
-            libroDAO.actualizarEstadoDisponible(l.getId(), false);
+            l.setDisponible(false);
+            libroDAO.actualizar(l);
+
             mostrarAlerta("Éxito", "Prestamo guardado", Alert.AlertType.INFORMATION);
             limpiarFormulario();
             cargarDatosTabla();
@@ -132,14 +144,20 @@ public class PrestamosController {
         }
     }
 
+    /**
+     * Finaliza el ciclo de vida de un préstamo devolviendo el libro al inventario activo.
+     * Evalúa si existe un incumplimiento de fechas y aplica el **Patrón Strategy** para calcular
+     * el monto económico de la multa correspondiente antes de cerrar la transacción.
+     */
     @FXML
     private void finalizarPrestamo() {
         Prestamo sel = tablaPrestamos.getSelectionModel().getSelectedItem();
         if (sel == null || sel.getEstado().equals("DEVUELTO")) return;
 
-        // LÓGICA DE MULTAS (STRATEGY)
         LocalDate hoy = LocalDate.now();
         LocalDate limite = sel.getFechaDevolucion().toLocalDate();
+
+        // --- APLICACIÓN PATRÓN STRATEGY ---
         if (hoy.isAfter(limite)) {
             long dias = ChronoUnit.DAYS.between(limite, hoy);
             MultaStrategy strategy = new MultaBasicaStrategy();
@@ -147,8 +165,16 @@ public class PrestamosController {
             mostrarAlerta("MULTA", "Retraso: " + dias + " días. Pago: $" + monto, Alert.AlertType.WARNING);
         }
 
-        if (prestamoDAO.marcarComoDevuelto(sel.getId())) {
-            libroDAO.actualizarEstadoDisponible(sel.getIdLibro(), true);
+        sel.setEstado("DEVUELTO");
+        if (prestamoDAO.actualizar(sel)) {
+            for (Libro lib : libroDAO.listar()) {
+                if (lib.getId() == sel.getIdLibro()) {
+                    lib.setDisponible(true);
+                    libroDAO.actualizar(lib);
+                    break;
+                }
+            }
+
             mostrarAlerta("Éxito", "Libro devuelto", Alert.AlertType.INFORMATION);
             cargarDatosTabla();
             cargarCombos();
@@ -178,6 +204,10 @@ public class PrestamosController {
         tablaPrestamos.getSelectionModel().clearSelection();
     }
 
+    /**
+     * Rellena las listas de selección, filtrando la lista de libros para mostrar
+     * únicamente aquellos que cuentan con stock físico disponible.
+     */
     private void cargarCombos() {
         cmbUsuario.setItems(FXCollections.observableArrayList(usuarioDAO.listar()));
         ObservableList<Libro> disp = FXCollections.observableArrayList();

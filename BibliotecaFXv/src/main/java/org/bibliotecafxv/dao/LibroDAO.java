@@ -2,259 +2,163 @@ package org.bibliotecafxv.dao;
 
 import org.bibliotecafxv.connetion.ConexionBD;
 import org.bibliotecafxv.model.Libro;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Clase de Acceso a Datos (DAO) para la entidad Libro.
+ * Contiene la lógica de negocio para interactuar con la tabla 'libros',
+ * incluyendo consultas complejas que relacionan autores y categorías.
+ */
 public class LibroDAO implements GenericDAO<Libro> {
 
-    @Override
-    public boolean guardar(Libro libro) {
-        String sql = """
-                INSERT INTO libros
-                (titulo, autor, categoria, disponible, descripcion, portada)
-                VALUES (?, ?, ?, ?, ?, ?)
-                """;
-
-        Connection conn = null;
-        PreparedStatement ps = null;
-
-        try {
-            conn = ConexionBD.getInstancia().getConexion();
-            ps = conn.prepareStatement(sql);
-
-            ps.setString(1, libro.getTitulo());
-            ps.setString(2, libro.getAutor());
-            ps.setString(3, libro.getCategoria());
-            ps.setBoolean(4, libro.isDisponible());
-            ps.setString(5, libro.getDescripcion());
-            ps.setString(6, libro.getPortada());
-
-            int filasAfectadas = ps.executeUpdate();
-            System.out.println("Libro guardado exitosamente. Filas afectadas: " + filasAfectadas);
-            return filasAfectadas > 0;
-
-        } catch (SQLException e) {
-            System.out.println("Error al guardar el libro");
-            e.printStackTrace();
-            return false;
-        } finally {
-            cerrarRecursos(null, ps, null);
-        }
-    }
-
+    /**
+     * Recupera todos los libros registrados, realizando uniones (LEFT JOIN)
+     * con las tablas de autores y categorías para obtener los nombres reales
+     * en lugar de solo mostrar los identificadores numéricos.
+     * * @return Lista completa de libros con los datos de autor y categoría integrados.
+     */
     @Override
     public List<Libro> listar() {
         List<Libro> lista = new ArrayList<>();
-        String sql = "SELECT * FROM libros";
+        String sql = "SELECT l.id_libro, l.titulo, l.autor_id, l.categoria_id, a.nombre AS autor_nombre, " +
+                "c.nombre AS categoria_nombre, l.disponible, l.descripcion, l.portada " +
+                "FROM libros l " +
+                "LEFT JOIN autores a ON l.autor_id = a.id_autor " +
+                "LEFT JOIN categorias c ON l.categoria_id = c.id_categoria";
 
-        Connection conn = null;
-        Statement st = null;
-        ResultSet rs = null;
-
-        try {
-            conn = ConexionBD.getInstancia().getConexion();
-            st = conn.createStatement();
-            rs = st.executeQuery(sql);
+        try (Connection conn = ConexionBD.getInstancia().getConexion();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 Libro libro = new Libro(
-                        rs.getInt("id"),
+                        rs.getInt("id_libro"),
                         rs.getString("titulo"),
-                        rs.getString("autor"),
-                        rs.getString("categoria"),
+                        rs.getInt("autor_id"),
+                        rs.getInt("categoria_id"),
+                        rs.getString("autor_nombre") != null ? rs.getString("autor_nombre") : "Desconocido",
+                        rs.getString("categoria_nombre") != null ? rs.getString("categoria_nombre") : "Sin categoría",
                         rs.getBoolean("disponible"),
                         rs.getString("descripcion"),
                         rs.getString("portada")
                 );
                 lista.add(libro);
             }
-
         } catch (SQLException e) {
-            System.out.println("Error al listar libros");
-            e.printStackTrace();
-        } finally {
-            cerrarRecursos(rs, st, null);
+            System.out.println("Error al listar libros: " + e.getMessage());
         }
-
         return lista;
     }
 
     @Override
-    public boolean actualizar(Libro libro) {
-        String sql = """
-                UPDATE libros
-                SET titulo=?,
-                    autor=?,
-                    categoria=?,
-                    disponible=?,
-                    descripcion=?,
-                    portada=?
-                WHERE id=?
-                """;
-
-        Connection conn = null;
-        PreparedStatement ps = null;
-
-        try {
-            conn = ConexionBD.getInstancia().getConexion();
-            ps = conn.prepareStatement(sql);
-
+    public boolean guardar(Libro libro) {
+        String sql = "INSERT INTO libros (titulo, autor_id, categoria_id, disponible, descripcion, portada) VALUES (?, ?, ?, ?, ?, ?)";
+        try (Connection conn = ConexionBD.getInstancia().getConexion();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, libro.getTitulo());
-            ps.setString(2, libro.getAutor());
-            ps.setString(3, libro.getCategoria());
+            ps.setInt(2, libro.getAutorId());
+            ps.setInt(3, libro.getCategoriaId());
+            ps.setBoolean(4, libro.isDisponible());
+            ps.setString(5, libro.getDescripcion());
+            ps.setString(6, libro.getPortada());
+            int filasAfectadas = ps.executeUpdate();
+            return filasAfectadas > 0;
+        } catch (SQLException e) {
+            System.out.println("Error al guardar libro: " + e.getMessage());
+            return false;
+        }
+    }
+
+    @Override
+    public boolean actualizar(Libro libro) {
+        String sql = "UPDATE libros SET titulo=?, autor_id=?, categoria_id=?, disponible=?, descripcion=?, portada=? WHERE id_libro=?";
+        try (Connection conn = ConexionBD.getInstancia().getConexion();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, libro.getTitulo());
+            ps.setInt(2, libro.getAutorId());
+            ps.setInt(3, libro.getCategoriaId());
             ps.setBoolean(4, libro.isDisponible());
             ps.setString(5, libro.getDescripcion());
             ps.setString(6, libro.getPortada());
             ps.setInt(7, libro.getId());
 
             int filasAfectadas = ps.executeUpdate();
-            System.out.println("Libro actualizado. Filas afectadas: " + filasAfectadas);
             return filasAfectadas > 0;
-
         } catch (SQLException e) {
-            System.out.println("Error al actualizar el libro");
-            e.printStackTrace();
+            System.out.println("Error al actualizar libro: " + e.getMessage());
             return false;
-        } finally {
-            cerrarRecursos(null, ps, null);
         }
     }
 
     @Override
     public boolean eliminar(int id) {
-        String sql = "DELETE FROM libros WHERE id=?";
-
-        Connection conn = null;
-        PreparedStatement ps = null;
-
-        try {
-            conn = ConexionBD.getInstancia().getConexion();
-            ps = conn.prepareStatement(sql);
-            ps.setInt(1, id);
-
-            int filasAfectadas = ps.executeUpdate();
-            System.out.println("Libro eliminado. Filas afectadas: " + filasAfectadas);
-            return filasAfectadas > 0;
-
-        } catch (SQLException e) {
-            System.out.println("Error al eliminar el libro");
-            e.printStackTrace();
-            return false;
-        } finally {
-            cerrarRecursos(null, ps, null);
-        }
-    }
-
-    public List<Libro> buscarPorTitulo(String titulo) {
-        List<Libro> lista = new ArrayList<>();
-        String sql = "SELECT * FROM libros WHERE titulo LIKE ?";
-
-        Connection conn = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
-        try {
-            conn = ConexionBD.getInstancia().getConexion();
-            ps = conn.prepareStatement(sql);
-            ps.setString(1, "%" + titulo + "%");
-            rs = ps.executeQuery();
-
-            while (rs.next()) {
-                Libro libro = new Libro(
-                        rs.getInt("id"),
-                        rs.getString("titulo"),
-                        rs.getString("autor"),
-                        rs.getString("categoria"),
-                        rs.getBoolean("disponible"),
-                        rs.getString("descripcion"),
-                        rs.getString("portada")
-                );
-                lista.add(libro);
-            }
-
-        } catch (SQLException e) {
-            System.out.println("Error al buscar libros por título");
-            e.printStackTrace();
-        } finally {
-            cerrarRecursos(rs, ps, null);
-        }
-
-        return lista;
-    }
-
-    public List<Libro> buscarPorAutor(String autor) {
-        List<Libro> lista = new ArrayList<>();
-        String sql = "SELECT * FROM libros WHERE autor LIKE ?";
-
-        Connection conn = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
-        try {
-            conn = ConexionBD.getInstancia().getConexion();
-            ps = conn.prepareStatement(sql);
-            ps.setString(1, "%" + autor + "%");
-            rs = ps.executeQuery();
-
-            while (rs.next()) {
-                Libro libro = new Libro(
-                        rs.getInt("id"),
-                        rs.getString("titulo"),
-                        rs.getString("autor"),
-                        rs.getString("categoria"),
-                        rs.getBoolean("disponible"),
-                        rs.getString("descripcion"),
-                        rs.getString("portada")
-                );
-                lista.add(libro);
-            }
-
-        } catch (SQLException e) {
-            System.out.println("Error al buscar libros por autor");
-            e.printStackTrace();
-        } finally {
-            cerrarRecursos(rs, ps, null);
-        }
-
-        return lista;
-    }
-
-    private void cerrarRecursos(ResultSet rs, Statement st, Connection conn) {
-        try {
-            if (rs != null) rs.close();
-            if (st != null) st.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public int contarTotalLibros() {
-        String sql = "SELECT COUNT(*) AS total FROM libros";
-        int total = 0;
-
+        String sql = "DELETE FROM libros WHERE id_libro=?";
         try (Connection conn = ConexionBD.getInstancia().getConexion();
-             Statement st = conn.createStatement();
-             ResultSet rs = st.executeQuery(sql)) {
-
-            if (rs.next()) {
-                total = rs.getInt("total");
-            }
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            int filasAfectadas = ps.executeUpdate();
+            return filasAfectadas > 0;
         } catch (SQLException e) {
-            System.out.println("Error al contar libros");
-            e.printStackTrace();
+            System.out.println("Error al eliminar libro: " + e.getMessage());
+            return false;
         }
-        return total;
     }
 
-    public void actualizarEstadoDisponible(int idLibro, boolean disponible) {
-        String sql = "UPDATE libros SET disponible = ? WHERE id = ?";
+    /**
+     * Busca un libro específico utilizando su ID.
+     * Incorpora cruce de tablas (LEFT JOIN) para recuperar la información completa
+     * del libro, incluyendo nombres del autor y la categoría.
+     * * @param id El identificador único del libro a buscar.
+     * @return Objeto Libro con la información completa si se encuentra, o null en caso contrario.
+     */
+    public Libro buscarPorId(int id) {
+        String sql = "SELECT l.id_libro, l.titulo, l.autor_id, l.categoria_id, a.nombre AS autor_nombre, " +
+                "c.nombre AS categoria_nombre, l.disponible, l.descripcion, l.portada " +
+                "FROM libros l " +
+                "LEFT JOIN autores a ON l.autor_id = a.id_autor " +
+                "LEFT JOIN categorias c ON l.categoria_id = c.id_categoria WHERE l.id_libro=?";
+        try (Connection conn = ConexionBD.getInstancia().getConexion();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new Libro(
+                            rs.getInt("id_libro"),
+                            rs.getString("titulo"),
+                            rs.getInt("autor_id"),
+                            rs.getInt("categoria_id"),
+                            rs.getString("autor_nombre") != null ? rs.getString("autor_nombre") : "Desconocido",
+                            rs.getString("categoria_nombre") != null ? rs.getString("categoria_nombre") : "Sin categoría",
+                            rs.getBoolean("disponible"),
+                            rs.getString("descripcion"),
+                            rs.getString("portada")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al buscar libro por ID: " + e.getMessage());
+        }
+        return null;
+    }
+
+    /**
+     * Calcula la cantidad total de libros registrados en la base de datos.
+     * Utilizado principalmente para las estadísticas del Dashboard.
+     * * @return Un número entero que representa el total de libros, o 0 si ocurre un error.
+     */
+    public int contarTotalLibros() {
+        String sql = "SELECT COUNT(*) FROM libros";
         try (Connection con = ConexionBD.getInstancia().getConexion();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setBoolean(1, disponible);
-            ps.setInt(2, idLibro);
-            ps.executeUpdate();
-        } catch (Exception e) { e.printStackTrace(); }
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al contar libros: " + e.getMessage());
+        }
+        return 0;
     }
 }
