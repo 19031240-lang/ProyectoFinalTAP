@@ -59,6 +59,14 @@ Este proyecto fue estructurado siguiendo las mejores prácticas de la Ingenierí
 *Ejecuta la clase principal Main.java.
 
 ---
+## Conexión a la Base de Datos
+* MySQL
+* Tomar en consideración el cambio del puerto normalmente es 3306.
+* Cambiar el nombre del usuario y la contraseña adeptandolo a lo propio.
+<img width="856" height="2504" alt="libreria@localhost  2" src="https://github.com/user-attachments/assets/968ae3a6-701a-4f5b-bfae-ce574e85c23c" />
+
+
+---
 
 ## Capturas de Pantalla
 
