@@ -158,8 +158,6 @@ public class PrestamoDAO implements GenericDAO<Prestamo> {
             ps.setInt(1, idPrestamo);
 
             boolean exito = ps.executeUpdate() > 0;
-
-            // 🚨 OBSERVER: Si la devolución fue exitosa, también lo notificamos
             if (exito) {
                 notifier.notificar("¡SISTEMA! El préstamo con ID [" + idPrestamo + "] ha sido DEVUELTO correctamente.");
             }

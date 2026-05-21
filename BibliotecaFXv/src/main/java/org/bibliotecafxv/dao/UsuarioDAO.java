@@ -171,27 +171,4 @@ public class UsuarioDAO implements GenericDAO<Usuario> {
         }
         return null;
     }
-
-    /**
-     * Recupera el hash de contraseña almacenado para un correo específico.
-     * * @param correo El correo del usuario del cual se desea recuperar la credencial encriptada.
-     * @return La cadena encriptada de la contraseña, o null si no se encuentra.
-     */
-    public String recuperarPasswordPorCorreo(String correo) {
-        String sql = "SELECT password FROM usuarios WHERE correo = ?";
-
-        try (Connection conn = ConexionBD.getInstancia().getConexion();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, correo);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getString("password");
-                }
-            }
-        } catch (SQLException e) {
-            System.out.println("Error al recuperar contraseña: " + e.getMessage());
-        }
-        return null;
-    }
 }

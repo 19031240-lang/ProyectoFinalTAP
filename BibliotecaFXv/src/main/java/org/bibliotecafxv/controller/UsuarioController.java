@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import org.bibliotecafxv.dao.UsuarioDAO;
+import org.bibliotecafxv.factory.UsuarioFactory;
 import org.bibliotecafxv.model.Usuario;
 import org.bibliotecafxv.util.HashUtil;
 
@@ -74,34 +75,23 @@ public class UsuarioController {
     @FXML
     private void guardarUsuario() {
         if (usuarioSeleccionado != null) {
-            mostrarAlerta(
-                    "Atención",
-                    "Hay un usuario seleccionado. Usa 'Actualizar' para modificarlo o 'Limpiar' para crear uno nuevo.",
-                    Alert.AlertType.WARNING
-            );
+            mostrarAlerta("Atención", "Hay un usuario seleccionado. Usa 'Actualizar'...", Alert.AlertType.WARNING);
             return;
         }
 
-        if (txtNombre.getText().isEmpty()
-                || txtCorreo.getText().isEmpty()
-                || txtPassword.getText().isEmpty()) {
-
-            mostrarAlerta(
-                    "Error",
-                    "Todos los campos son obligatorios para registrar un usuario.",
-                    Alert.AlertType.ERROR
-            );
+        if (txtNombre.getText().isEmpty() || txtCorreo.getText().isEmpty() || txtPassword.getText().isEmpty()) {
+            mostrarAlerta("Error", "Todos los campos son obligatorios.", Alert.AlertType.ERROR);
             return;
         }
 
-        Usuario nuevoUsuario = new Usuario();
-        nuevoUsuario.setNombre(txtNombre.getText());
-        nuevoUsuario.setCorreo(txtCorreo.getText());
+        String passwordCifrada = HashUtil.sha1(txtPassword.getText());
 
-        // Cifrado SHA-1 de la contraseña antes de mandarla al DAO
-        nuevoUsuario.setPassword(HashUtil.sha1(txtPassword.getText()));
-        nuevoUsuario.setRol(cmbRol.getValue());
-
+        Usuario nuevoUsuario = UsuarioFactory.crearUsuario(
+                cmbRol.getValue(),
+                txtNombre.getText(),
+                txtCorreo.getText(),
+                passwordCifrada
+        );
         if (usuarioDAO.guardar(nuevoUsuario)) {
             mostrarAlerta("Éxito", "Usuario registrado correctamente.", Alert.AlertType.INFORMATION);
             limpiarFormulario();

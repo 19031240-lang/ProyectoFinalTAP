@@ -21,7 +21,7 @@ public class AutorDAO implements GenericDAO<Autor> {
         try (Connection conn = ConexionBD.getInstancia().getConexion();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
-
+            //Listar autores
             while (rs.next()) {
                 lista.add(new Autor(rs.getInt("id_autor"), rs.getString("nombre")));
             }
