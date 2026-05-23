@@ -23,6 +23,7 @@ public class AutorDAO implements GenericDAO<Autor> {
              ResultSet rs = ps.executeQuery()) {
             //Listar autores
             while (rs.next()) {
+                System.out.println(rs.getInt("id_autor")+rs.getString("nombre"));
                 lista.add(new Autor(rs.getInt("id_autor"), rs.getString("nombre")));
             }
         } catch (SQLException e) {

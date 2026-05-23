@@ -80,16 +80,18 @@ public class DashboardController {
     }
 
     /**
-     * Inicializa los datos fijos de rendimiento semanal para la analítica del gráfico de barras.
+     * Carga la grafica de barras con datos reales de prestamos de la semana actual.
      */
     private void configurarGrafica() {
-        XYChart.Series<String, Number> series = new XYChart.Series<>();
-        series.getData().add(new XYChart.Data<>("Lun", 5));
-        series.getData().add(new XYChart.Data<>("Mar", 8));
-        series.getData().add(new XYChart.Data<>("Mie", 15));
-        series.getData().add(new XYChart.Data<>("Jue", 12));
-        series.getData().add(new XYChart.Data<>("Vie", 20));
+        graficaPrestamos.getData().clear();
+        int[] datos = prestamoDAO.contarPrestamosPorDiaSemanaActual();
+        String[] dias = {"Lun", "Mar", "Mie", "Jue", "Vie"};
 
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+        series.setName("Prestamos esta semana");
+        for (int i = 0; i < dias.length; i++) {
+            series.getData().add(new XYChart.Data<>(dias[i], datos[i]));
+        }
         graficaPrestamos.getData().add(series);
     }
 
@@ -119,6 +121,7 @@ public class DashboardController {
         cargarDatosTabla();
         cargarLibrosDestacados();
         crearCalendario();
+        configurarGrafica();
     }
 
     @FXML

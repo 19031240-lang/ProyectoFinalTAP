@@ -239,4 +239,47 @@ public class PrestamoDAO implements GenericDAO<Prestamo> {
         }
         return dias;
     }
+
+    /**
+     * Cuenta los préstamos registrados por cada día de la semana actual (lunes a viernes).
+     * Devuelve un arreglo de 5 enteros [lun, mar, mie, jue, vie].
+     */
+    public int[] contarPrestamosPorDiaSemanaActual() {
+        int[] conteos = new int[5];
+        String sql = "SELECT DAYOFWEEK(fecha_prestamo) AS dia, COUNT(*) AS total " +
+                "FROM prestamos " +
+                "WHERE YEARWEEK(fecha_prestamo, 1) = YEARWEEK(CURDATE(), 1) " +
+                "  AND DAYOFWEEK(fecha_prestamo) BETWEEN 2 AND 6 " +
+                "GROUP BY DAYOFWEEK(fecha_prestamo)";
+        try (Connection con = ConexionBD.getInstancia().getConexion();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                int dia = rs.getInt("dia");
+                int total = rs.getInt("total");
+                if (dia >= 2 && dia <= 6) {
+                    conteos[dia - 2] = total;
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al contar prestamos por dia: " + e.getMessage());
+        }
+        return conteos;
+    }
+
+    /**
+     * Cuenta los préstamos con estado DEVUELTO en total.
+     */
+    public int contarPrestamosDevueltos() {
+        String sql = "SELECT COUNT(*) FROM prestamos WHERE estado = 'DEVUELTO'";
+        try (Connection con = ConexionBD.getInstancia().getConexion();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) {
+            System.out.println("Error al contar devueltos: " + e.getMessage());
+        }
+        return 0;
+    }
+
 }

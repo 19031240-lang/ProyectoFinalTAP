@@ -10,8 +10,6 @@ public class Libro {
     private boolean disponible;
     private String descripcion;
     private String portada;
-    private int idAutor;
-    private int idCategoria;
 
 
     public Libro() {}
@@ -58,13 +56,13 @@ public class Libro {
     public String getPortada() { return portada; }
     public void setPortada(String portada) { this.portada = portada; }
 
-    public int getIdAutor() { return idAutor; }
+    public int getIdAutor() { return autorId; }
 
-    public void setIdAutor(int idAutor) { this.idAutor = idAutor; }
+    public void setIdAutor(int idAutor) { this.autorId = idAutor; }
 
-    public int getIdCategoria() { return idCategoria; }
+    public int getIdCategoria() { return categoriaId; }
 
-    public void setIdCategoria(int idCategoria) { this.idCategoria = idCategoria; }
+    public void setIdCategoria(int idCategoria) { this.categoriaId = idCategoria; }
     @Override
     public String toString() { return this.titulo; }
 }

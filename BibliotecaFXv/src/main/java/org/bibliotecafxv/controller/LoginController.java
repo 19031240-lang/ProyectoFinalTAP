@@ -62,8 +62,9 @@ public class LoginController {
 
                 // Transición física de la ventana de JavaFX
                 Stage stage = (Stage) txtCorreo.getScene().getWindow();
-                stage.getScene().setRoot(root);
+                stage.setScene(new Scene(root));
                 stage.setMaximized(true);
+                stage.show();
 
             } else {
                 lblMensaje.setText("Contraseña incorrecta ");
@@ -88,6 +89,7 @@ public class LoginController {
             Stage stage = (Stage) txtCorreo.getScene().getWindow();
             stage.setScene(new Scene(loader.load()));
             stage.setMaximized(true);
+            stage.show();
 
         } catch (Exception e) {
             e.printStackTrace();

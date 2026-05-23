@@ -218,6 +218,7 @@ public class CatalogoUsuarioController {
             Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(loader.load()));
             stage.setMaximized(true);
+            stage.show();
         } catch (Exception e) {
             e.printStackTrace();
         }
